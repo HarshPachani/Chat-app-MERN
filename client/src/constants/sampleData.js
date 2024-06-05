@@ -3,19 +3,23 @@ export const SampleChats = [
       avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
       name: "John Doe",
       _id: "1",
-      groupChat: false,
+      groupChat: true,
+      // groupChat: false,
+      groupId : '321',
       members: ["1", "2"],
     },
     {
       avatar: [
         "https://www.w3schools.com/howto/img_avatar.png",
-        // 'https://www.w3schools.com/howto/img_avatar.png',
-        // 'https://www.w3schools.com/howto/img_avatar.png',
-        // 'https://www.w3schools.com/howto/img_avatar.png',
+        'https://www.w3schools.com/howto/img_avatar.png',
+        'https://www.w3schools.com/howto/img_avatar.png',
+        'https://www.w3schools.com/howto/img_avatar.png',
       ],
       name: "John Foe",
       _id: "2",
-      groupChat: false,
+      groupId : '123',
+      groupChat: true,
+      // groupChat: false,
       members: ["1", "2"],
     },
   ];
@@ -64,8 +68,9 @@ export const SampleChats = [
         _id: "user._id",
         name: "Test",
       },
-      chat: "chatId",
+      chat: "1",
       createdAt: "2024-02-12T10:41:30.360Z",
+      sameSender: true,
     },
     {
       attachments: [
@@ -80,9 +85,43 @@ export const SampleChats = [
         _id: "sdfsdfsdf",
         name: "Test2",
       },
-      chat: "chatId",
+      chat: "2",
+      sameSender: false,
       createdAt: "2024-04-24T10:41:30.360Z",
     },
+    {
+      content: "Hey there!",
+      _id: "dkaldaljdljldkalajlkjf",
+      sender: {
+        _id: "sdfsdfsdf",
+        name: "Test2",
+      },
+      chat: "2",
+      createdAt: "2024-04-24T10:41:30.360Z",
+      sameSender: false,
+    },
+    {
+      content: "I am using Your app",
+      _id: "dkaldaljdljldkalajlkjf",
+      sender: {
+        _id: "sdfsdfsdf",
+        name: "Test2",
+      },
+      chat: "1",
+      sameSender: true,
+      createdAt: "2024-04-24T10:41:30.360Z",
+    },
+    {
+      content: "Testing frontend",
+      _id: "dkaldaljdljldkalajlkjf",
+      sender: {
+        _id: "sdfsdfsdf",
+        name: "Test2",
+      },
+      chat: "1",
+      createdAt: "2024-04-24T10:41:30.360Z",
+    sameSender: true,
+    }
   ];
   
   

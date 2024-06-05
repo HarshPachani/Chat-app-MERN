@@ -6,7 +6,9 @@ import ChatList from '../components/ChatList';
 
 const Home = () => {
   return (
-    <Box height='100%' bgcolor={gray}>
+    <Box height='100%' bgcolor={gray} sx={{
+      display: { sm: 'flex', xs: 'none' }
+    }}>
       <Typography p='2rem' variant='h5' textAlign={'center'}>
         Select a friend to Chat
       </Typography>

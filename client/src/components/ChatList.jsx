@@ -4,18 +4,31 @@ import { SampleChats } from '../constants/sampleData'
 import ChatItem from '../shared/ChatItem'
 import { white } from '../constants/color'
 import ChatListLayout from './ChatListLayout'
+import { useParams } from 'react-router-dom'
 
 const ChatList = ({
     w = '30%',
     chats = SampleChats,
-    chatId,
+    // chatId,
     onlineUsers = [],
 }) => {
+    const params = useParams();
+    const chatId = params?.id;
+
   return (
     <Stack 
         // width={w} 
         direction={'column'}
-        sx={{ overflow: 'auto', height: '100%', backgroundColor: white, borderRadius: '20px' }}
+        sx={{ 
+            overflow: 'auto', 
+            height: '100%', 
+            backgroundColor: white, 
+            borderRadius: '20px',
+            marginRight: '5px',
+            border: `2px solid ${white}`,
+            position: 'sticky',
+            top: 0
+        }}
     >
         {
             chats?.map((data, index) => {
@@ -40,4 +53,4 @@ const ChatList = ({
   )
 }
 
-export default ChatListLayout()(ChatList)
+export default ChatListLayout()(ChatList);
