@@ -7,8 +7,8 @@ import RenderAttachment from "../shared/RenderAttachment";
 // import { motion } from "framer-motion";
 
 const MessageComponent = ({ message, user }) => {
-  const { sender, content, attachments = [], createdAt, sameSender } = message;
-//   const sameSender = sender?._id === user?._id;
+  const { sender, content, attachments = [], createdAt } = message;
+  const sameSender = sender?._id === user?._id;
 
   const timeAgo = moment(createdAt).fromNow();
 

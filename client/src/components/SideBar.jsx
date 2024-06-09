@@ -12,10 +12,13 @@ import {
 import ChatIcon from '@mui/icons-material/Chat';
 import IconBtn from './IconButton';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const SideBar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+
+  const { user } = useSelector((store) => store.auth);
 
   const navigateToGroup = () => {
     navigate('/groups')
@@ -29,7 +32,7 @@ const SideBar = () => {
           bgcolor: purple,
           height: { xs: '40px', sm: '100vh' },
           width: { xs: '100vw', sm: '80px' },
-          margin: '2px' ,
+          margin: '3px',
           padding: '10px',
           borderRadius: '20px',
           display: 'flex',
@@ -88,7 +91,7 @@ const SideBar = () => {
           </Box>
         </Toolbar>
           <IconBtn 
-            title="profile"
+            title={user.username}
             icon={<ProfileIcon />}
           />
       </AppBar>
