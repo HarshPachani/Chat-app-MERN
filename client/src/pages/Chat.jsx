@@ -10,24 +10,36 @@ import { sampleMessage } from '../constants/sampleData'
 import MessageComponent from '../components/MessageComponent'
 import { InputBox } from '../styles/StyledComponents'
 import { useSocket } from '../context/socket'
-import { NEW_MESSAGE } from '../constants/events'
+import { ALERT, NEW_MESSAGE, START_TYPING, STOP_TYPING } from '../constants/events'
 import { useGetChatDetailsQuery, useGetMessagesQuery } from '../redux/api/api'
-import { useSocketEvents } from '../hooks/Hook'
+import { useErrors, useSocketEvents } from '../hooks/Hook'
+import { TypingLoader } from '../layout/Loaders'
+import { useDispatch } from 'react-redux'
+import { removeNewMessagesAlert } from '../redux/reducers/chat'
 
 const Chat = ({ chatId, user, chats=[] }) => {
     const navigate = useNavigate();
     const [message, setMessage] = useState('');
+    const [page, setPage] = useState(1);
 
     const bottomRef = useRef(null);
     const containerRef = useRef(null);
+    const typingTimeout = useRef(null);
 
     const [messages, setMessages] = useState([]);
+    const [userTyping, setUserTyping] = useState('');
 
     const socket = useSocket();
+    const dispatch = useDispatch();
 
     const chatDetails = useGetChatDetailsQuery({ chatId, skip: !chatId });
     const members = chatDetails?.data?.chat?.members;
-    const { data, isLoading, isError } = useGetMessagesQuery({ chatId });
+    const { data, isLoading, isError } = useGetMessagesQuery({ chatId, page });
+
+    const errors = [
+        { isError: chatDetails.isError, error: chatDetails.error },
+        // { isError: data.isError, error: data.error },
+      ];
 
     // const allMessages = [...oldMessagesChunk, ...messages];
     // console.log(data ? true : false);
@@ -35,6 +47,8 @@ const Chat = ({ chatId, user, chats=[] }) => {
     // const allMessages = [];
     
     useEffect(() => {
+        dispatch(removeNewMessagesAlert(chatId));
+
         return () => {
             setMessages([]);
             setMessage('');
@@ -51,6 +65,13 @@ const Chat = ({ chatId, user, chats=[] }) => {
 
     const handleMessageChange = (e) => {
         setMessage(e.target.value);
+        socket.emit(START_TYPING, { members, chatId })
+
+        if(typingTimeout.current) clearTimeout(typingTimeout.current);
+
+        typingTimeout.current = setTimeout(() => {
+            socket.emit(STOP_TYPING, { members, chatId });
+        }, 1500);
     }
 
     const navigateBack = () => {
@@ -70,11 +91,41 @@ const Chat = ({ chatId, user, chats=[] }) => {
         setMessages((prev) => [...prev, data?.message])
     }, [chatId]);
 
+    const startTypingListener = useCallback((data) => {
+        if(data.chatId !== chatId) return;
+        setUserTyping(true);
+    }, [chatId]);
+
+    const stopTypingListener = useCallback((data) => {
+        if(data.chatId !== chatId) return;
+        setUserTyping(false);
+    }, [chatId]);
+
+    const alertListener = useCallback((data) => {
+        if(data.chatId !== chatId) return;
+        const messageForAlert = {
+          content: data.message,
+          sender: {
+              _id: 'jaflkjlfakjlkdajljf',
+              name: 'Admin'
+          },
+          chat: chatId,
+          createdAt: new Date().toISOString(),
+        };
+    
+        setMessages((prev) => [...prev, messageForAlert]);
+    
+    }, [chatId]);
+
     const eventHandlers = {
+        [ALERT]: alertListener,
         [NEW_MESSAGE]: newMessagesListener,
+        [START_TYPING]: startTypingListener,
+        [STOP_TYPING]: stopTypingListener,
     }
 
     useSocketEvents(socket, eventHandlers);
+    useErrors(errors);
 
   return (
     <Box
@@ -133,9 +184,12 @@ const Chat = ({ chatId, user, chats=[] }) => {
             <MessageComponent key={i._id} message={i} user={user} />
             ))}
 
-            {/* {
-            userTyping && !isGroupChat && <TypingLoader />
+            {
+            // userTyping && !isGroupChat && <TypingLoader />
+                userTyping  && <TypingLoader />
             }
+
+            {/*
             {
             isGroupChat && groupUser && <div style={{ color: 'green' }}>{groupUser} is typing...</div>
             } */}
