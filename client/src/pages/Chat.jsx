@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import AppLayout from '../components/AppLayout'
 import { Box, IconButton, Stack, TextField, Tooltip, Typography } from '@mui/material'
 import { gray, orange, white } from '../constants/color'
@@ -9,10 +9,45 @@ import { useNavigate } from 'react-router-dom'
 import { sampleMessage } from '../constants/sampleData'
 import MessageComponent from '../components/MessageComponent'
 import { InputBox } from '../styles/StyledComponents'
+import { useSocket } from '../context/socket'
+import { NEW_MESSAGE } from '../constants/events'
+import { useGetChatDetailsQuery, useGetMessagesQuery } from '../redux/api/api'
+import { useSocketEvents } from '../hooks/Hook'
 
 const Chat = ({ chatId, user, chats=[] }) => {
     const navigate = useNavigate();
     const [message, setMessage] = useState('');
+
+    const bottomRef = useRef(null);
+    const containerRef = useRef(null);
+
+    const [messages, setMessages] = useState([]);
+
+    const socket = useSocket();
+
+    const chatDetails = useGetChatDetailsQuery({ chatId, skip: !chatId });
+    const members = chatDetails?.data?.chat?.members;
+    const { data, isLoading, isError } = useGetMessagesQuery({ chatId });
+
+    // const allMessages = [...oldMessagesChunk, ...messages];
+    // console.log(data ? true : false);
+    const allMessages = data ? [...data.messages, ...messages] : [...messages];
+    // const allMessages = [];
+    
+    useEffect(() => {
+        return () => {
+            setMessages([]);
+            setMessage('');
+          }
+    }, [chatId]);
+
+    useEffect(() => {
+        if(bottomRef.current) bottomRef.current.scrollIntoView({ behaviour: 'smooth' });
+        }, [messages]);
+        
+        useEffect(() => {
+            if(containerRef.current) containerRef.current.scrollIntoView({ behaviour: 'smooth' });
+    }, [allMessages]);
 
     const handleMessageChange = (e) => {
         setMessage(e.target.value);
@@ -21,6 +56,25 @@ const Chat = ({ chatId, user, chats=[] }) => {
     const navigateBack = () => {
         navigate('/');
     }
+
+    const submitHandler = (e) => {
+        e.preventDefault();
+        if(!message.trim()) return;
+
+        socket.emit(NEW_MESSAGE, { chatId, members, message });
+        setMessage('');
+    }
+
+    const newMessagesListener = useCallback((data) => {
+        if(data.chatId !== chatId) return;
+        setMessages((prev) => [...prev, data?.message])
+    }, [chatId]);
+
+    const eventHandlers = {
+        [NEW_MESSAGE]: newMessagesListener,
+    }
+
+    useSocketEvents(socket, eventHandlers);
 
   return (
     <Box
@@ -62,7 +116,7 @@ const Chat = ({ chatId, user, chats=[] }) => {
             </Box>
         </Box>
         <Stack
-            // ref={containerRef}
+            ref={containerRef}
             boxSizing="border-box"
             spacing="1rem"
             padding="1rem"
@@ -75,7 +129,7 @@ const Chat = ({ chatId, user, chats=[] }) => {
             }}
         >
             {/* Render Messages */}
-            {sampleMessage.map((i) => (
+            {allMessages?.map((i) => (
             <MessageComponent key={i._id} message={i} user={user} />
             ))}
 
@@ -86,7 +140,7 @@ const Chat = ({ chatId, user, chats=[] }) => {
             isGroupChat && groupUser && <div style={{ color: 'green' }}>{groupUser} is typing...</div>
             } */}
 
-            {/* <div ref={bottomRef}/> */}
+            <div ref={bottomRef}/>
         </Stack>
         <form
             style={{
@@ -94,7 +148,8 @@ const Chat = ({ chatId, user, chats=[] }) => {
                 bottom: 0,
                 marginTop: '10px'
             }}
-            >
+            onSubmit={submitHandler}
+        >
             <Stack
                 direction={"row"}
                 height="100%"
@@ -125,7 +180,7 @@ const Chat = ({ chatId, user, chats=[] }) => {
                 />
 
                 <IconButton
-                    type="submit"
+                    type='submit'
                     sx={{
                         bgcolor: gray,
                         rotate: "-30deg",
