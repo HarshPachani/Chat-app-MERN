@@ -2,10 +2,11 @@ import { TryCatch } from "../middlewares/error.js"
 import { User } from '../models/user.js';
 import { Chat } from '../models/chat.js';
 import { Request } from '../models/request.js';
-import { cookieOptions, sendToken } from "../utils/features.js";
+import { cookieOptions, emitEvent, sendToken } from "../utils/features.js";
 import { ErrorHandler } from "../utils/utility.js";
 import { compare } from 'bcrypt';
 import { getOtherMember } from "../lib/helper.js";
+import { NEW_REQUEST, REFETCH_CHATS, REFETCH_PROFILE } from "../constants/events.js";
 
 const newUser = TryCatch(async(req, res, next) => {
   const { name, username, password, bio } = req.body;
@@ -21,7 +22,7 @@ const newUser = TryCatch(async(req, res, next) => {
 
 const login = TryCatch(async(req, res, next) => {
   const { username, password } = req.body;
-  
+
   const user = await User.findOne({ username }).select('+password');
   if(!user)
     return next(new ErrorHandler('Invalid Username or Password!', 400));
@@ -120,6 +121,8 @@ const sendFriendRequest = TryCatch(async(req, res, next) => {
     receiver: userId,
   })
 
+  emitEvent(req, NEW_REQUEST, [userId]);
+
   return res.status(200).json({
     success: true,
     message: "Friend Request Sent successfully",
@@ -156,6 +159,8 @@ const acceptFriendRequest = TryCatch(async(req, res, next) => {
     }),
     request.deleteOne()
   ]);
+
+  emitEvent(req, REFETCH_CHATS, members);
 
   return res.status(200).json({
     success: true,
@@ -196,7 +201,7 @@ const getMyFriends = TryCatch(async(req, res, next) => {
   if(chatId) {
     const chat = await Chat.findById(chatId);
 
-    const availableFriends = friends.filter(friend => chat.members.includes(friend._id));
+    const availableFriends = friends.filter(friend => !chat.members.includes(friend._id));
     return res.status(200).json({
         success: true,
         friends: availableFriends,
@@ -210,6 +215,25 @@ const getMyFriends = TryCatch(async(req, res, next) => {
 
 });
 
+const updateProfile = TryCatch(async(req, res, next) => {
+  const { field } = req.query;
+  const { value } = req.body;
+  
+  const userProfile = await User.findById(req.user);
+  if(userProfile) {
+    userProfile[`${field}`] = value;
+    await userProfile.save();
+    emitEvent(req, REFETCH_PROFILE, [req.user]);
+    return res.status(201).json({
+      success: true,
+      message: `${field} Updated Successfully!`,
+    });
+  }
+
+  
+  return next(new ErrorHandler('User not found', 400));
+});
+
 export {
   login,
   logout,
@@ -221,4 +245,5 @@ export {
   acceptFriendRequest,
   allNotifications,
   getMyFriends,
+  updateProfile,
 }
