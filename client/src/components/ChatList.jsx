@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { Stack } from '@mui/material'
+import React, { Suspense, lazy, useEffect, useState } from 'react'
+import { Backdrop, Stack } from '@mui/material'
 import ChatItem from '../shared/ChatItem'
 import { white } from '../constants/color'
 import ChatListLayout from './ChatListLayout'
@@ -7,6 +7,13 @@ import { useParams } from 'react-router-dom'
 import { Box, Typography, TextField } from '@mui/material';
 import { useMyChatsQuery } from '../redux/api/api'
 import { InputBox } from '../styles/StyledComponents'
+import IconBtn from './IconButton'
+import { AccountCircle as ProfileIcon } from '@mui/icons-material'
+import { useDispatch, useSelector } from 'react-redux'
+import { setIsProfile } from '../redux/reducers/misc'
+
+
+const ProfileDialog = lazy(() => import('../dialogs/ProfileDialog.jsx'));
 
 const ChatList = ({
     w = '30%',
@@ -18,13 +25,17 @@ const ChatList = ({
           count: 0,
         },
     ],
+    user,
     onlineUsers = [],
 }) => {
+    const dispatch = useDispatch();
     const params = useParams();
     const chatId = params?.id;
 
     const [search, setSearch] = useState('');
     const [userChats, setUserChats] = useState([]);
+
+    const { isProfile } = useSelector(store => store.misc);
 
     useEffect(() => {
         setUserChats(chats);
@@ -47,13 +58,17 @@ const ChatList = ({
         setUserChats(chats);
     }
 
+    
+  const openProfile = () => dispatch(setIsProfile(true));
 
 
   return (
+    <>
     <Box
         sx={{
-            // display: isHome ? 'none' : 'flex',
-            display: 'flex',
+            // display: chatId ? 'none' : 'flex',
+            display: { xs: chatId ? 'none' : 'flex', sm: 'flex' },
+            // display: 'flex',
             flexDirection: 'column',
             borderBottom: '1px solid black',
             width: { xs: '100%', sm: '30%' },
@@ -70,17 +85,39 @@ const ChatList = ({
             //   }}
             sx={{
                 display: 'flex',
+                flexDirection: { xs: 'column', md: 'row' },
                 justifyContent: 'space-around',
                 alignItems: 'center',
                 backgroundColor: white,
+                // backgroundColor: 'black',
+                // color: 'white',
                 borderRadius: '15px',
                 padding: '5px',
                 position: 'sticky',
-                top: 0
+                top: 0,
+                height: { xs: '80px', sm: 'auto' }
             }}
             margin={'5px'}
         >
-            <Typography variant='h5'>Chats</Typography>
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    width: { xs: '100%', sm: 'auto' },
+                }}
+            >
+                <Typography variant='h5' sx={{ marginLeft: '5px' }}>Chats</Typography>
+                <IconBtn 
+                    title={user?.username}
+                    icon={<ProfileIcon />}
+                    sx={{
+                        display: { xs: 'flex', sm: 'none' }
+                    }}
+                    onClick={openProfile}
+                />
+            </Box>
             <InputBox 
                 placeholder="Search Friends..."
                 value={search}
@@ -93,8 +130,10 @@ const ChatList = ({
             direction={'column'}
             sx={{ 
                 height: '100%', 
-                overflow: 'scroll', 
+                overflow: 'auto', 
                 backgroundColor: white, 
+                // backgroundColor: 'black', 
+                // color: 'white',
                 borderRadius: '20px',
                 marginRight: '5px',
                 border: `2px solid ${white}`,
@@ -106,13 +145,14 @@ const ChatList = ({
                 userChats?.map((data, index) => {
                 const { avatar, _id, name, groupChat, members } = data;
                 const newMessageAlert = newMessagesAlert.find(({ chatId }) => chatId === _id )
-                console.log(newMessageAlert, newMessagesAlert);
+                const isOnline = members?.some((member) => onlineUsers.includes(member));
+
                 return (
                     <ChatItem
                         key={_id}
                         index={index}
                         newMessageAlert={newMessageAlert}
-                        // isOnline={isOnline}
+                        isOnline={isOnline}
                         avatar={avatar}
                         name={name}
                         _id={_id}
@@ -125,6 +165,14 @@ const ChatList = ({
             }
         </Stack>
     </Box>
+    {
+        isProfile && (
+          <Suspense fallback={ <Backdrop open /> }>
+            <ProfileDialog />
+          </Suspense>
+        )
+    }
+    </>
   )
 }
 
