@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import jwt from 'jsonwebtoken';
+import { getSockets } from "../lib/helper.js";
 
 const connectDb = () => {
     mongoose.connect(process.env.MONGO_URI, {
@@ -18,6 +19,12 @@ const cookieOptions = {
     secure: true,
 };
 
+const emitEvent = (req, event, users, data) => {
+    const io = req.app.get('io');
+    const userSocket = getSockets(users);
+    io.to(userSocket).emit(event, data);
+};
+
 const sendToken = (res, user, code, message) => {
     const token = jwt.sign({_id: user._id}, process.env.JWT_SECRET)
 
@@ -34,4 +41,5 @@ export {
     connectDb,
     sendToken,
     cookieOptions,
+    emitEvent,
 }
