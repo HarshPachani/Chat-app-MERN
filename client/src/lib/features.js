@@ -17,4 +17,9 @@ const transformImage = (url = "", width=100) => {
     return url;
 };
 
-export { fileFormat, transformImage }
+const getOrSaveFromStorage = ({ key, value, get }) => {
+    if(get) return localStorage.getItem(key) ? JSON.parse(localStorage.getItem(key)) : null;
+    localStorage.setItem(key, JSON.stringify(value));
+}
+
+export { fileFormat, transformImage, getOrSaveFromStorage, }
