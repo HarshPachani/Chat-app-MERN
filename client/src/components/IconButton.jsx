@@ -1,15 +1,14 @@
 import React from "react";
 import { Tooltip, IconButton, Badge } from '@mui/material';
-import { orange } from "../constants/color";
 
-const IconBtn = ({ title, icon, onClick, value, color='inherit' }) => {
+const IconBtn = ({ title, icon, onClick, value, color='inherit', sx }) => {
     return (
-      <Tooltip title={title}>
+      <Tooltip title={title} sx={sx}>
         <IconButton size="large" onClick={onClick} style={{
           color: color
         }}>
           {
-            value ? <Badge badgeContent={value} color='error'>{icon}</Badge> : icon
+            value ? <Badge badgeContent={value} color='warning'>{icon}</Badge> : icon
           }
         </IconButton>
       </Tooltip>
