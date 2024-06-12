@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import AppLayout from '../components/AppLayout'
-import { Box, IconButton, Stack, TextField, Tooltip, Typography } from '@mui/material'
+import { Avatar, Box, IconButton, Stack, TextField, Tooltip, Typography } from '@mui/material'
 import { gray, orange, white } from '../constants/color'
 import ChatItem from '../shared/ChatItem'
 import AvatarCard from '../shared/AvatarCard'
@@ -11,10 +11,10 @@ import MessageComponent from '../components/MessageComponent'
 import { InputBox } from '../styles/StyledComponents'
 import { useSocket } from '../context/socket'
 import { ALERT, NEW_MESSAGE, START_TYPING, STOP_TYPING } from '../constants/events'
-import { useGetChatDetailsQuery, useGetMessagesQuery } from '../redux/api/api'
+import { useGetChatDetailsQuery, useGetMessagesQuery, useGetOtherChatMemberQuery } from '../redux/api/api'
 import { useErrors, useSocketEvents } from '../hooks/Hook'
 import { TypingLoader } from '../layout/Loaders'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { removeNewMessagesAlert } from '../redux/reducers/chat'
 
 const Chat = ({ chatId, user, chats=[] }) => {
@@ -35,6 +35,9 @@ const Chat = ({ chatId, user, chats=[] }) => {
     const chatDetails = useGetChatDetailsQuery({ chatId, skip: !chatId });
     const members = chatDetails?.data?.chat?.members;
     const { data, isLoading, isError } = useGetMessagesQuery({ chatId, page });
+    const { data: chatMember } = useGetOtherChatMemberQuery({ chatId });
+
+    const { theme } = useSelector(store => store.chat);
 
     const errors = [
         { isError: chatDetails.isError, error: chatDetails.error },
@@ -57,10 +60,10 @@ const Chat = ({ chatId, user, chats=[] }) => {
 
     useEffect(() => {
         if(bottomRef.current) bottomRef.current.scrollIntoView({ behaviour: 'smooth' });
-        }, [messages]);
+    }, [messages]);
         
-        useEffect(() => {
-            if(containerRef.current) containerRef.current.scrollIntoView({ behaviour: 'smooth' });
+    useEffect(() => {
+        if(containerRef.current) containerRef.current.scrollIntoView({ behaviour: 'smooth' });
     }, [allMessages]);
 
     const handleMessageChange = (e) => {
@@ -122,6 +125,7 @@ const Chat = ({ chatId, user, chats=[] }) => {
         [NEW_MESSAGE]: newMessagesListener,
         [START_TYPING]: startTypingListener,
         [STOP_TYPING]: stopTypingListener,
+        [ALERT]: alertListener,
     }
 
     useSocketEvents(socket, eventHandlers);
@@ -131,15 +135,20 @@ const Chat = ({ chatId, user, chats=[] }) => {
     <Box
         sx={{
             display: 'flex',
+            position: 'relative',
             flexDirection: 'column',
             borderBottom: '1px solid black',
-            width: { xs: '100%', sm: '70%'}
+            width: { xs: '100%', sm: '70%'},
+            // height: '100%',
+            height: '100vh',
         }}
     >
         <Box
             sx={{
                 display: 'flex',
                 backgroundColor: white,
+                // backgroundColor: 'black',
+                // color: 'white',
                 borderRadius: '15px',
                 padding: '5px',
                 position: 'sticky',
@@ -157,9 +166,13 @@ const Chat = ({ chatId, user, chats=[] }) => {
                     <KeyboardBackspaceIcon />
                 </IconButton>
             </Tooltip>
-            <AvatarCard avatar={user.avatar}/>
+            {chatMember?.otherMember?.avatar ? 
+                <AvatarCard avatar={chatMember?.otherMember?.avatar}/>
+                :
+                <Avatar />
+            }
             <Box>
-                <Typography variant='h5'>{user.name}</Typography>
+                <Typography variant='h5'>{chatMember?.otherMember?.name}</Typography>
                 <Typography sx={{
                     color: 'gray',
                     fontSize: '0.85rem',
@@ -168,14 +181,16 @@ const Chat = ({ chatId, user, chats=[] }) => {
         </Box>
         <Stack
             ref={containerRef}
-            boxSizing="border-box"
-            spacing="1rem"
-            padding="1rem"
+            boxSizing='border-box'
+            spacing='1rem'
+            padding='1rem'
             bgcolor={white}
-            height={"90%"}
+            // bgcolor={'black'}
+            height={'100%'}
             sx={{
-                overflowX: "hidden",
-                overflowY: "auto",
+                position: 'relative',
+                overflowX: 'hidden',
+                overflowY: 'scroll',
                 borderRadius: '20px'
             }}
         >
@@ -199,6 +214,7 @@ const Chat = ({ chatId, user, chats=[] }) => {
         <form
             style={{
                 position: 'sticky',
+                // top: 'auto',
                 bottom: 0,
                 marginTop: '10px'
             }}
@@ -238,7 +254,7 @@ const Chat = ({ chatId, user, chats=[] }) => {
                     sx={{
                         bgcolor: gray,
                         rotate: "-30deg",
-                        color: orange,
+                        color: theme,
                         marginLeft: "1rem",
                         padding: "0.5rem",
                     }}
