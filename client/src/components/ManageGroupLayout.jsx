@@ -1,14 +1,51 @@
 import { Title } from '@mui/icons-material'
-import React, { memo } from 'react'
+import React, { memo, useCallback, useEffect, useState } from 'react'
 import SideBar from './SideBar'
 import { Box, Grid, Stack, TextField, Typography } from '@mui/material'
 import { gray, white } from '../constants/color'
 import AvatarCard from '../shared/AvatarCard'
 import { Link } from '../styles/StyledComponents'
 import { SampleChats } from '../constants/sampleData'
+import { useMyGroupsQuery } from '../redux/api/api'
+import { useSearchParams } from 'react-router-dom'
+import { useSocketEvents } from '../hooks/Hook'
+import { REFETCH_CHATS } from '../constants/events'
+import { useSocket } from '../context/socket'
 
-const ManageGroupLayout = () => (WrappedComponent) => {
+const manageGroupLayout = () => (WrappedComponent) => {
     return (props) => {
+      const socket = useSocket();
+      const [groupName, setGroupName] = useState('');
+      const [groupNameUpdatedValue, setGroupNameUpdatedValue] = useState('');
+      const [isEdit, setIsEdit] = useState(false);
+      const [members, setMembers] = useState([]);
+      
+      const { data , refetch } = useMyGroupsQuery('');
+      
+      const refetchListener = useCallback((data) => {
+        refetch();
+      }, [refetch]);
+
+      const eventHandlers = {
+        [REFETCH_CHATS]: refetchListener,
+      }
+      useSocketEvents(socket, eventHandlers);
+
+      const chatId = useSearchParams()[0].get('group');
+
+      useEffect(() => {
+        if(chatId) {
+          setGroupName(`Group Name ${chatId}`);
+          setGroupNameUpdatedValue(`Group Name ${chatId}`);
+        }
+
+        return () => {
+          setGroupName(``);
+          setGroupNameUpdatedValue(``);
+          setIsEdit(false);
+        };
+      }, [chatId]);
+
         return (
           <>
             <Box
@@ -20,7 +57,7 @@ const ManageGroupLayout = () => (WrappedComponent) => {
             >
                 <Title />
                 <SideBar />
-                <Box
+                {/* <Box
                     sx={{
                         display: 'flex',
                         flexDirection: 'column',
@@ -39,13 +76,13 @@ const ManageGroupLayout = () => (WrappedComponent) => {
                             backgroundColor: gray,
                         }}
                     />
-                    <GroupsList myGroups={SampleChats} />
-                </Box>
+                    <GroupsList myGroups={myGroups?.data?.groups} /> 
+                </Box> */}
                 <WrappedComponent 
                     {...props}
-                    // chatId={chatId} 
+                    myGroups={data?.groups}
                     // user={user}
-                    // chats={sampleMessage} 
+                    // chats={} 
                 />
             </Box>
           </>
@@ -54,6 +91,7 @@ const ManageGroupLayout = () => (WrappedComponent) => {
 }
 
 const GroupsList = ({ w = "100%", myGroups = [], chatId }) => {
+  
     return (
       <Stack
         overflow="auto"
@@ -80,11 +118,15 @@ const GroupsList = ({ w = "100%", myGroups = [], chatId }) => {
 
 const GroupListItem = memo(({ group, chatId }) => {
   const { name, avatar, _id } = group;
+  const currentChat = useSearchParams()[0].get("group");
   return (
     <Link
       to={`?group=${_id}`}
       onClick={(e) => {
         if (chatId === _id) e.preventDefault();
+      }}
+      style={{
+        backgroundColor: currentChat === _id ? gray : '' 
       }}
     >
       <Stack direction={"row"} spacing={"1rem"} alignItems={"center"}>
@@ -95,4 +137,5 @@ const GroupListItem = memo(({ group, chatId }) => {
   );
 });
 
-export default ManageGroupLayout
+export default manageGroupLayout
+export { GroupsList };
