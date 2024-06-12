@@ -10,7 +10,7 @@ import chatRoute from './routes/chat.js';
 import cors from 'cors';
 import corsOptions from './constants/config.js';
 import { socketAuthenticator } from './middlewares/auth.js';
-import { NEW_MESSAGE, NEW_MESSAGE_ALERT, START_TYPING, STOP_TYPING } from './constants/events.js';
+import { NEW_MESSAGE, NEW_MESSAGE_ALERT, ONLINE_USERS, ONLINE_USER_DELETE, START_TYPING, STOP_TYPING } from './constants/events.js';
 import { v4 as uuid } from 'uuid';
 import { getSockets } from './lib/helper.js';
 import { Message } from './models/message.js';
@@ -23,8 +23,13 @@ connectDb()
 const app = express();
 
 const server = createServer(app);
+
 const io = new Server(server, { cors: corsOptions });
+
+app.set('io', io);
+
 const userSocketIDs = new Map();
+const onlineUsers = new Set();
 
 const PORT = process.env.PORT || 8000;
 
@@ -48,6 +53,8 @@ io.use((socket, next) => {
 io.on('connection', (socket) => {
     const user = socket.user;
     userSocketIDs.set(user._id.toString(), socket.id);
+    onlineUsers.add(user._id.toString());
+
     // console.log('Available Clients: ', userSocketIDs);
     
     socket.on(NEW_MESSAGE, async({ chatId, members, message }) => {
@@ -88,16 +95,24 @@ io.on('connection', (socket) => {
         socket.to(membersSocket).emit(START_TYPING, { chatId });
     });
     
-    
     socket.on(STOP_TYPING, ({ members, chatId }) => {
         const membersSocket = getSockets(members);
         socket.to(membersSocket).emit(STOP_TYPING, { chatId });
     });
 
+    socket.on(ONLINE_USERS, () => {
+        socket.emit(ONLINE_USERS, Array.from(onlineUsers));
+    });
+
+    socket.on(ONLINE_USER_DELETE, ({ userId }) => {
+        onlineUsers.delete(userId.toString());
+        socket.broadcast.emit(ONLINE_USERS, Array.from(onlineUsers));
+    });
+
     socket.on('disconnect', () => {
         userSocketIDs.delete(user._id.toString());
-        // onlineUsers.delete(user._id.toString());
-        // socket.broadcast.emit(ONLINE_USERS, Array.from(onlineUsers));
+        onlineUsers.delete(user._id.toString());
+        socket.broadcast.emit(ONLINE_USERS, Array.from(onlineUsers));
     });
 });
 
