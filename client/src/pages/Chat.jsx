@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react'
 import AppLayout from '../components/AppLayout'
-import { Avatar, Box, IconButton, Stack, TextField, Tooltip, Typography } from '@mui/material'
+import { Avatar, Box, CircularProgress, IconButton, Stack, TextField, Tooltip, Typography } from '@mui/material'
 import { gray, orange, white } from '../constants/color'
 import ChatItem from '../shared/ChatItem'
 import AvatarCard from '../shared/AvatarCard'
@@ -10,7 +10,7 @@ import { sampleMessage } from '../constants/sampleData'
 import MessageComponent from '../components/MessageComponent'
 import { InputBox } from '../styles/StyledComponents'
 import { useSocket } from '../context/socket'
-import { ALERT, NEW_MESSAGE, START_TYPING, STOP_TYPING } from '../constants/events'
+import { ALERT, GROUP_USER_STOPPED_TYPING, GROUP_USER_TYPING, NEW_MESSAGE, START_TYPING, STOP_TYPING } from '../constants/events'
 import { useGetChatDetailsQuery, useGetMessagesQuery, useGetOtherChatMemberQuery } from '../redux/api/api'
 import { useErrors, useSocketEvents } from '../hooks/Hook'
 import { TypingLoader } from '../layout/Loaders'
@@ -21,13 +21,19 @@ const Chat = ({ chatId, user, chats=[] }) => {
     const navigate = useNavigate();
     const [message, setMessage] = useState('');
     const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
+    const [groupUser, setGroupUser] = useState('');
 
     const bottomRef = useRef(null);
     const containerRef = useRef(null);
     const typingTimeout = useRef(null);
+    const chatListRef = useRef(null);
 
     const [messages, setMessages] = useState([]);
     const [userTyping, setUserTyping] = useState('');
+    const [iAmTyping, setIAmTyping] = useState(false);
+
+    const [allMessages, setAllMessages] = useState([]);
 
     const socket = useSocket();
     const dispatch = useDispatch();
@@ -35,9 +41,11 @@ const Chat = ({ chatId, user, chats=[] }) => {
     const chatDetails = useGetChatDetailsQuery({ chatId, skip: !chatId });
     const members = chatDetails?.data?.chat?.members;
     const { data, isLoading, isError } = useGetMessagesQuery({ chatId, page });
-    const { data: chatMember } = useGetOtherChatMemberQuery({ chatId });
+    const { data: chatMemberDetails } = useGetOtherChatMemberQuery({ chatId });
 
     const { theme } = useSelector(store => store.chat);
+
+    
 
     const errors = [
         { isError: chatDetails.isError, error: chatDetails.error },
@@ -46,7 +54,6 @@ const Chat = ({ chatId, user, chats=[] }) => {
 
     // const allMessages = [...oldMessagesChunk, ...messages];
     // console.log(data ? true : false);
-    const allMessages = data ? [...data.messages, ...messages] : [...messages];
     // const allMessages = [];
     
     useEffect(() => {
@@ -55,25 +62,69 @@ const Chat = ({ chatId, user, chats=[] }) => {
         return () => {
             setMessages([]);
             setMessage('');
-          }
+            setPage(1);
+            setTotalPages(0);
+        }
     }, [chatId]);
 
     useEffect(() => {
-        if(bottomRef.current) bottomRef.current.scrollIntoView({ behaviour: 'smooth' });
+        if(bottomRef.current && page===1) bottomRef.current.scrollIntoView({ behaviour: 'smooth' });
     }, [messages]);
-        
+
     useEffect(() => {
         if(containerRef.current) containerRef.current.scrollIntoView({ behaviour: 'smooth' });
     }, [allMessages]);
 
+    useEffect(() => {
+        if(data) {
+            // console.log(data);
+            setMessages(data ? [...data.messages, ...messages] : [...messages]);
+            setTotalPages(data?.totalPages);
+        }
+    }, [data]);
+
+    useEffect(() => console.log(totalPages), [totalPages]);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (chatListRef.current.scrollTop === 0) {
+                // console.log(page, totalPages);
+                // console.log(page === totalPages);
+                if(page === totalPages) {
+                    setPage(totalPages)
+                    return;
+                }
+                setPage(prev => prev + 1);
+            }
+        };
+
+        const chatListElement = chatListRef.current;
+        chatListElement.addEventListener('scroll', handleScroll);
+
+        return () => {
+            chatListElement.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
+
+
     const handleMessageChange = (e) => {
         setMessage(e.target.value);
+
+        if(!iAmTyping){
+            if(chatMemberDetails?.isGroupChat){
+                socket.emit(GROUP_USER_TYPING, { userId: user._id, username: user.name, chatId })
+            }
+            setIAmTyping(true);
+        }
         socket.emit(START_TYPING, { members, chatId })
 
         if(typingTimeout.current) clearTimeout(typingTimeout.current);
 
         typingTimeout.current = setTimeout(() => {
+            if(chatMemberDetails?.isGroupChat)
+                socket.emit(GROUP_USER_STOPPED_TYPING);
             socket.emit(STOP_TYPING, { members, chatId });
+            setIAmTyping(false);
         }, 1500);
     }
 
@@ -120,17 +171,29 @@ const Chat = ({ chatId, user, chats=[] }) => {
     
     }, [chatId]);
 
+    const handleGroupUserTyping = ({userId, username, chatId: currentChat}) => {
+        if(chatId !== currentChat) return;
+        if(chatMemberDetails?.isGroupChat)
+            setGroupUser(username);
+    };
+
+    const handleGroupUserStoppedTyping = () => {
+        if(chatMemberDetails?.isGroupChat)
+            setGroupUser();
+    };
+
     const eventHandlers = {
         [ALERT]: alertListener,
         [NEW_MESSAGE]: newMessagesListener,
         [START_TYPING]: startTypingListener,
         [STOP_TYPING]: stopTypingListener,
-        [ALERT]: alertListener,
+        [GROUP_USER_TYPING]: handleGroupUserTyping,
+        [GROUP_USER_STOPPED_TYPING]: handleGroupUserStoppedTyping,
     }
 
     useSocketEvents(socket, eventHandlers);
     useErrors(errors);
-
+    const chatMember = [];
   return (
     <Box
         sx={{
@@ -166,21 +229,43 @@ const Chat = ({ chatId, user, chats=[] }) => {
                     <KeyboardBackspaceIcon />
                 </IconButton>
             </Tooltip>
-            {chatMember?.otherMember?.avatar ? 
-                <AvatarCard avatar={chatMember?.otherMember?.avatar}/>
+            
+            {chatMemberDetails?.chatAvatar ? 
+                <AvatarCard avatar={chatMemberDetails?.chatAvatar}/>
                 :
                 <Avatar />
             }
             <Box>
-                <Typography variant='h5'>{chatMember?.otherMember?.name}</Typography>
-                <Typography sx={{
-                    color: 'gray',
-                    fontSize: '0.85rem',
-                }}>online</Typography>
+                <Typography variant='h5'>{chatMemberDetails?.chatName}</Typography>
+                {
+                    chatMemberDetails?.isGroupChat ? 
+                    <Tooltip title={`You, ${chatMemberDetails?.chatAvatar?.map(member => member.name).join(',')}`}>
+                        <Typography sx={{
+                            color: 'gray',
+                            fontSize: '0.85rem',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            width: {xs: '60%', md: '100%'},
+                        }}>
+                            {`You, ${chatMemberDetails?.chatAvatar?.map(member => member.name).join(',')}`}
+                        </Typography>
+                    </Tooltip>
+                    : 
+                    <Typography sx={{
+                        color: 'gray',
+                        fontSize: '0.85rem',
+                    }}>online</Typography>
+                }
             </Box>
         </Box>
+        {isLoading && 
+            <Box alignItems={'center'}>
+                <CircularProgress />
+            </Box>
+        }
         <Stack
-            ref={containerRef}
+            ref={chatListRef}
             boxSizing='border-box'
             spacing='1rem'
             padding='1rem'
@@ -195,19 +280,17 @@ const Chat = ({ chatId, user, chats=[] }) => {
             }}
         >
             {/* Render Messages */}
-            {allMessages?.map((i) => (
-            <MessageComponent key={i._id} message={i} user={user} />
+            {messages?.map((i) => (
+            <MessageComponent key={i._id} message={i} user={user} groupChat={chatMemberDetails?.isGroupChat} />
             ))}
 
             {
-            // userTyping && !isGroupChat && <TypingLoader />
-                userTyping  && <TypingLoader />
+                userTyping && !chatMemberDetails?.isGroupChat && <TypingLoader />
             }
-
-            {/*
+            
             {
-            isGroupChat && groupUser && <div style={{ color: 'green' }}>{groupUser} is typing...</div>
-            } */}
+                chatMemberDetails?.isGroupChat && groupUser && <div style={{ color: 'green' }}>{groupUser} is typing...</div>
+            }
 
             <div ref={bottomRef}/>
         </Stack>
@@ -267,4 +350,4 @@ const Chat = ({ chatId, user, chats=[] }) => {
   )
 }
 
-export default AppLayout()(Chat)
+export default AppLayout()(Chat);
