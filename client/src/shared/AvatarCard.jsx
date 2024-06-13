@@ -14,7 +14,7 @@ const AvatarCard = ({ avatar=[], max=4 }) => {
             }}
         >
             <Box width={'5rem'} height={'3rem'} />
-            {avatar.map((i, index) => (
+            {avatar && avatar?.map((i, index) => (
                 <Avatar
                   key={Math.random()*100} 
                   src={i} 
