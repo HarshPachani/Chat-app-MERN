@@ -6,7 +6,7 @@ import RenderAttachment from "../shared/RenderAttachment";
 import { useSelector } from "react-redux";
 import { motion } from "framer-motion";
 
-const MessageComponent = ({ message, user }) => {
+const MessageComponent = ({ message, user, groupChat }) => {
   const { sender, content, attachments = [], createdAt } = message;
   const sameSender = sender?._id === user?._id;
 
@@ -29,15 +29,18 @@ const MessageComponent = ({ message, user }) => {
     >
         <div
             style={{
-                // backgroundColor: sameSender && attachments.length === 0 ? orange : 'rgb(238, 238, 238)',
                 backgroundColor: sameSender && attachments.length === 0 ? theme : 'rgb(238, 238, 238)',
-                // backgroundColor: sameSender && attachments.length === 0 ? orange : lightBlue,
                 borderRadius: sameSender ? '15px 15px 0px 15px' : '15px 15px 15px 0px',
                 padding: "0.5rem",
                 color: sameSender && attachments.length === 0 ? 'white' : 'black',
                 overflow: 'auto'
             }}
         >
+            {(!sameSender && groupChat) && (
+                <Typography color={theme} fontWeight={"600"} variant="caption">
+                {sender.name}
+                </Typography>
+            )}
             {content && <Typography>{content}</Typography>}
             {/* Attachment */}
             {attachments.length > 0 &&
@@ -59,7 +62,7 @@ const MessageComponent = ({ message, user }) => {
                         </a>
                     </Box>
                 );
-                })}
+            })}
         </div>
         <Typography
             variant="caption"
