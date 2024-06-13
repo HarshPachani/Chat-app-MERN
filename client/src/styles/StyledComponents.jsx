@@ -1,5 +1,5 @@
 import { Link as LinkComponent } from 'react-router-dom';
-import { styled } from '@mui/material';
+import { Skeleton, keyframes, styled } from '@mui/material';
 import { gray } from '../constants/color';
 
 const Link = styled(LinkComponent)
@@ -19,6 +19,16 @@ const InputBox = styled('input')`
     padding: 0 3rem;
     border-radius: 1.5rem;
     background-color: ${gray}
-`;
+    `;
 
-export { Link, InputBox };
+const bounceAnimation = keyframes`
+0% { transform: scale(1); }
+50% { transform: scale(1.5); }
+100% { transform: scale(1); }
+`
+
+const BouncingSkeleton = styled(Skeleton)(() => ({
+    animation: `${bounceAnimation} 1s infinite`
+}))
+
+export { Link, InputBox, BouncingSkeleton };
