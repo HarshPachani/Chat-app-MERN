@@ -10,7 +10,7 @@ import chatRoute from './routes/chat.js';
 import cors from 'cors';
 import corsOptions from './constants/config.js';
 import { socketAuthenticator } from './middlewares/auth.js';
-import { NEW_MESSAGE, NEW_MESSAGE_ALERT, ONLINE_USERS, ONLINE_USER_DELETE, START_TYPING, STOP_TYPING } from './constants/events.js';
+import { GROUP_USER_STOPPED_TYPING, GROUP_USER_TYPING, NEW_MESSAGE, NEW_MESSAGE_ALERT, ONLINE_USERS, ONLINE_USER_DELETE, START_TYPING, STOP_TYPING } from './constants/events.js';
 import { v4 as uuid } from 'uuid';
 import { getSockets } from './lib/helper.js';
 import { Message } from './models/message.js';
@@ -108,6 +108,16 @@ io.on('connection', (socket) => {
         onlineUsers.delete(userId.toString());
         socket.broadcast.emit(ONLINE_USERS, Array.from(onlineUsers));
     });
+
+    
+    socket.on(GROUP_USER_TYPING, ({ userId, username, chatId }) => {
+        socket.broadcast.emit(GROUP_USER_TYPING, { userId, username, chatId });
+    })
+
+    socket.on(GROUP_USER_STOPPED_TYPING, () => {
+        socket.broadcast.emit(GROUP_USER_STOPPED_TYPING, 'Typing');
+    })
+    
 
     socket.on('disconnect', () => {
         userSocketIDs.delete(user._id.toString());
