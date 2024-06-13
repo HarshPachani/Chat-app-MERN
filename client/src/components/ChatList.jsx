@@ -54,7 +54,7 @@ const ChatList = ({
             setUserChats(chats);
             return
         }
-        chats = chats.filter(chat => chat.name.includes(search.trim()));
+        chats = chats.filter(chat => chat.name.toLowerCase().includes(search.toLowerCase().trim()));
         setUserChats(chats);
     }
 
