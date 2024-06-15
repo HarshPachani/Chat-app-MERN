@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useSocket } from '../context/socket';
 import { useSocketEvents } from '../hooks/Hook'
 import { CHAT_JOINED, NEW_MESSAGE_ALERT, NEW_REQUEST, ONLINE_USERS, ONLINE_USER_DELETE, REFETCH_CHATS } from '../constants/events'
-import { incrementNotification, setNewMessagesAlert } from '../redux/reducers/chat.js'
+import { incrementNotification, setNewMessagesAlert, setNewMessageCount } from '../redux/reducers/chat.js'
 import { getOrSaveFromStorage } from '../lib/features'
 
 const appLayout = () => (WrappedComponent) => {
@@ -33,6 +33,7 @@ const appLayout = () => (WrappedComponent) => {
 
         useEffect(() => {
             getOrSaveFromStorage({ key: NEW_MESSAGE_ALERT, value: newMessageAlert });
+            dispatch(setNewMessageCount())
         }, [newMessageAlert]);
 
         useEffect(() => {
@@ -42,7 +43,7 @@ const appLayout = () => (WrappedComponent) => {
 
         useEffect(() => {
             socket.emit(ONLINE_USERS, {});
-            // return () => socket.emit(ONLINE_USER_DELETE, { userId: user._id });
+            return () => socket.emit(ONLINE_USER_DELETE, { userId: user._id });
         }, []);
 
         const newMessageAlertListener = useCallback((data) => {
