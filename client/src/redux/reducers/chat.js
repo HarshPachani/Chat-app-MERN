@@ -30,6 +30,12 @@ const getOrSetTheme = ({ value='' }) => {
     return color;
 }
 
+const countNewMessages = () => {
+    const newMessages = getOrSaveFromStorage({ key: 'NEW_MESSAGE_ALERT', get: true }) || 0;
+    console.log(newMessages.length);
+    return newMessages?.length-1;
+}
+
 const initialState = {
     notificationCount: getOrSaveFromStorage({ key: 'NOTIFICATIONS', get: true }) || 0,
     newMessageAlert: getOrSaveFromStorage({ key: 'NEW_MESSAGE_ALERT', get: true }) || [
@@ -38,6 +44,7 @@ const initialState = {
             count: 0,
         }
     ],
+    newMessagesCount: countNewMessages(),
     theme: getOrSetTheme({}),
 }
 
@@ -48,7 +55,7 @@ const chatSlice = createSlice({
         incrementNotification: (state) => {
             state.notificationCount += 1;
             getOrSaveFromStorage({ key: 'NOTIFICATIONS', value: state.notificationCount })
-            },
+        },
         resetNotificationCount: (state) => {
             state.notificationCount = 0;
             getOrSaveFromStorage({ key: 'NOTIFICATIONS', value: state.notificationCount })
@@ -70,7 +77,11 @@ const chatSlice = createSlice({
         setTheme: (state, action) => {
             getOrSaveFromStorage({ key: 'THEME', value: action.payload });
             state.theme = getOrSetTheme({ value: action.payload });
-        }
+        },
+        setNewMessageCount: (state, action) => {
+            const newMessages = countNewMessages();
+            state.newMessagesCount = newMessages;
+        },
     }
 });
 
@@ -82,4 +93,5 @@ export const {
     setNewMessagesAlert,
     removeNewMessagesAlert,
     setTheme,
+    setNewMessageCount,
  } = chatSlice.actions;
