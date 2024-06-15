@@ -16,6 +16,7 @@ import { useErrors, useSocketEvents } from '../hooks/Hook'
 import { TypingLoader } from '../layout/Loaders'
 import { useDispatch, useSelector } from 'react-redux'
 import { removeNewMessagesAlert } from '../redux/reducers/chat'
+import ChatHeader from '../components/ChatHeader'
 
 const Chat = ({ chatId, user, chats=[] }) => {
     const navigate = useNavigate();
@@ -206,59 +207,7 @@ const Chat = ({ chatId, user, chats=[] }) => {
             height: '100vh',
         }}
     >
-        <Box
-            sx={{
-                display: 'flex',
-                backgroundColor: white,
-                // backgroundColor: 'black',
-                // color: 'white',
-                borderRadius: '15px',
-                padding: '5px',
-                position: 'sticky',
-                top: 0
-            }}
-            margin={'5px'}
-        >
-            <Tooltip title="back">
-                <IconButton
-                    sx={{
-                        color: 'black',
-                    }}
-                    onClick={navigateBack}
-                    >
-                    <KeyboardBackspaceIcon />
-                </IconButton>
-            </Tooltip>
-            
-            {chatMemberDetails?.chatAvatar ? 
-                <AvatarCard avatar={chatMemberDetails?.chatAvatar}/>
-                :
-                <Avatar />
-            }
-            <Box>
-                <Typography variant='h5'>{chatMemberDetails?.chatName}</Typography>
-                {
-                    chatMemberDetails?.isGroupChat ? 
-                    <Tooltip title={`You, ${chatMemberDetails?.chatAvatar?.map(member => member.name).join(',')}`}>
-                        <Typography sx={{
-                            color: 'gray',
-                            fontSize: '0.85rem',
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            width: {xs: '60%', md: '100%'},
-                        }}>
-                            {`You, ${chatMemberDetails?.chatAvatar?.map(member => member.name).join(',')}`}
-                        </Typography>
-                    </Tooltip>
-                    : 
-                    <Typography sx={{
-                        color: 'gray',
-                        fontSize: '0.85rem',
-                    }}>online</Typography>
-                }
-            </Box>
-        </Box>
+        <ChatHeader chatMemberDetails={chatMemberDetails} />
         {isLoading && 
             <Box alignItems={'center'}>
                 <CircularProgress />
