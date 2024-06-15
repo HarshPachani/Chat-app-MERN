@@ -1,11 +1,11 @@
-// import { useFileHandler, useInputValidation } from "6pp";
+import { useFileHandler } from "6pp";
 import { CameraAlt as CameraAltIcon } from "@mui/icons-material";
 import { Avatar, Button, Container, IconButton, Paper, Stack, TextField, Typography, } from "@mui/material";
 import axios from "axios";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-// import { VisuallyHiddenInput } from "../components/styles/StyledComponents";
+import { VisuallyHiddenInput } from '../styles/StyledComponents'
 import { bgGradient, gray } from "../constants/color";
 import { userExists } from "../redux/reducers/auth";
 
@@ -24,7 +24,7 @@ const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-//   const avatar = useFileHandler("single", 2);
+  const avatar = useFileHandler("single", 2);
 
   const handleLogin = async (e) => {
     setIsLoading(true);
@@ -62,7 +62,7 @@ const Login = () => {
     const toastId = toast.loading('Signing Up...');
 
     const formData = new FormData();
-    // formData.append("avatar", avatar.file);
+    formData.append("avatar", avatar.file);
     formData.append("name", name);
     formData.append("bio", bio);
     formData.append("username", username);
@@ -176,7 +176,7 @@ const Login = () => {
                 }}
                 onSubmit={handleSignUp}
               >
-                {/* <Stack position="relative" width="10rem" margin="auto">
+                <Stack position="relative" width="10rem" margin="auto">
                   <Avatar
                     sx={{
                       width: "10rem",
@@ -207,9 +207,9 @@ const Login = () => {
                       />
                     </>
                   </IconButton>
-                </Stack> */}
+                </Stack>
 
-                {/* {avatar.error && (
+                {avatar.error && (
                   <Typography
                     m="1rem auto"
                     width="fit-content"
@@ -219,7 +219,7 @@ const Login = () => {
                   >
                     {avatar.error}
                   </Typography>
-                )} */}
+                )}
 
                 <TextField
                   required
