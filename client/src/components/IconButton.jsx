@@ -1,18 +1,40 @@
-import React from "react";
-import { Tooltip, IconButton, Badge } from '@mui/material';
+import React, { memo } from "react";
+import { Tooltip, IconButton, Badge, Avatar } from '@mui/material';
 
-const IconBtn = ({ title, icon, onClick, value, color='inherit', sx }) => {
-    return (
+// lightBlue: info
+// orange: warning
+// blue: primary
+
+const IconBtn = ({ title, icon, onClick, value, color='inherit', sx, src }) => {
+  return (
       <Tooltip title={title} sx={sx}>
         <IconButton size="large" onClick={onClick} style={{
           color: color
         }}>
-          {
-            value ? <Badge badgeContent={value} color='warning'>{icon}</Badge> : icon
+          { src ? 
+          value ? <Badge 
+          badgeContent={value} 
+          sx={{
+            '& .MuiBadge-badge': {
+              backgroundColor: color === 'inherit' ? 'white' : color ,
+              color: color === 'inherit' ? 'black' : 'white',
+            },
+          }}
+        >{icon}</Badge> : <Avatar src={src} />
+          :
+            value ? <Badge 
+                      badgeContent={value} 
+                      sx={{
+                        '& .MuiBadge-badge': {
+                          backgroundColor: color === 'inherit' ? 'white' : color ,
+                          color: color === 'inherit' ? 'black' : 'white',
+                        },
+                      }}
+                    >{icon}</Badge> : icon
           }
         </IconButton>
       </Tooltip>
     );
-  };
+};
 
-export default IconBtn
+export default memo(IconBtn)
