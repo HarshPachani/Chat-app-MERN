@@ -2,10 +2,11 @@ import express from 'express';
 import { registerValidator, validateHandler, loginValidator, sendFriendRequestValidator, acceptFriendRequestValidator } from '../lib/validators.js';
 import { getMyProfile, login, logout, newUser, searchUser, searchFriends, sendFriendRequest, acceptFriendRequest,allNotifications, getMyFriends, updateProfile } from '../controllers/user.js';
 import { isAuthenticated } from '../middlewares/auth.js';
+import { singleAvatar } from '../middlewares/multer.js';
 
 const router = express.Router();
 
-router.post('/new', registerValidator(), validateHandler, newUser);
+router.post('/new', singleAvatar, registerValidator(), validateHandler, newUser);
 router.post('/login', loginValidator(), validateHandler, login);
 
 router.use(isAuthenticated);
