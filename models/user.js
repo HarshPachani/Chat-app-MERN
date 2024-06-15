@@ -20,16 +20,16 @@ const userSchema = new Schema({
         required: true,
         select: false,
     },
-    // avatar: {
-    //     public_id: {
-    //         type: String,
-    //         required: true,
-    //     },
-    //     url: {
-    //         type: String,
-    //         required: true,
-    //     },
-    // }
+    avatar: {
+        public_id: {
+            type: String,
+            required: true,
+        },
+        url: {
+            type: String,
+            required: true,
+        },
+    }
 }, { timestamps: true });
 
 userSchema.pre('save', async function(next) {
