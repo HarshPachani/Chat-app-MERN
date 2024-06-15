@@ -1,5 +1,5 @@
 import { Search as SearchIcon } from '@mui/icons-material';
-import { Dialog, DialogTitle, InputAdornment, List, Stack, TextField } from '@mui/material';
+import { CircularProgress, Dialog, DialogTitle, InputAdornment, List, Stack, TextField, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setIsSearch } from '../redux/reducers/misc';
@@ -13,7 +13,7 @@ const Search = () => {
 
     const { isSearch } = useSelector((store) => store.misc);
 
-    const [searchUser] = useLazySearchUserQuery();
+    const [searchUser, {isFetching}] = useLazySearchUserQuery();
     const [sendFriendRequest, isLoadingSendFriendRequest] = useAsyncMutation(useSendFriendRequestMutation);
     
     const dispatch = useDispatch();
@@ -35,7 +35,8 @@ const Search = () => {
 
     return (
         <Dialog open={isSearch} onClose={searchCloseHandler}>
-            <Stack p='2rem' width='25rem' direction='column'>
+            {/* <Stack p='2rem' width='25rem' direction='column'> */}
+            <Stack p='2rem' direction='column'>
                 <DialogTitle textAlign={'center'}>Find People</DialogTitle>
                 <TextField
                     label=''
@@ -53,7 +54,7 @@ const Search = () => {
                 />
 
                 <List>
-                    {users.length > 0 && 
+                    {isFetching ? (<CircularProgress />) : (users.length > 0 &&
                         users?.map((user, index) => (
                             <UserItem 
                                 user={user}
@@ -62,7 +63,7 @@ const Search = () => {
                                 handlerIsLoading={isLoadingSendFriendRequest}
                             />
                         ))
-                    }
+                    )}
                 </List>
             </Stack>
         </Dialog>
