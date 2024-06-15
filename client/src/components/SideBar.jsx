@@ -1,4 +1,4 @@
-import { AppBar, Backdrop, Box, Toolbar, Typography } from '@mui/material'
+import { AppBar, Avatar, Backdrop, Box, Toolbar, Typography } from '@mui/material'
 import React, { Suspense, lazy } from 'react'
 import { purple } from '../constants/color.js';
 import {
@@ -29,7 +29,7 @@ const SideBar = ({ chatId }) => {
 
   const { user } = useSelector((store) => store.auth);
   const { isSearch, isNotification, isNewGroup, isProfile } = useSelector((store) => store.misc);
-  const { notificationCount, theme } = useSelector((store) => store.chat);
+  const { notificationCount, theme, newMessagesCount } = useSelector((store) => store.chat);
   
   const navigateToGroup = () => {
     navigate('/groups')
@@ -82,10 +82,11 @@ const SideBar = ({ chatId }) => {
           {/* <Toolbar> */}
             <Box>
               <IconBtn
-                title="Chat"
+                title="Chats"
                 icon={<ChatIcon />}
                 onClick={navigateToChat}
-                color={(location.pathname.includes('/chat') || location.pathname === '/') && (!isSearch && !isNotification && !isNewGroup) ? theme : 'inherit'}
+                color={(location.pathname.includes('/chat') || location.pathname === '/') && (!isSearch && !isNotification && !isNewGroup && !isProfile) ? theme : 'inherit'}
+                value={newMessagesCount}
               />
               <IconBtn
                 title="Search"
@@ -100,7 +101,7 @@ const SideBar = ({ chatId }) => {
                 onClick={openNewGroup}
               />
               <IconBtn
-                title="Manage Group"
+                title="Manage Groups"
                 icon={<GroupIcon />}
                 color={location.pathname.includes('/groups') ? theme : 'inherit'}
                 onClick={navigateToGroup}
@@ -114,14 +115,28 @@ const SideBar = ({ chatId }) => {
               />
             </Box>
           {/* </Toolbar> */}
-          <IconBtn 
-            title={user.username}
-            icon={<ProfileIcon />}
-            sx={{
-                display: { xs: 'none', sm: 'flex' }
-            }}
-            onClick={openProfile}
-          />
+          {
+            user?.avatar?.url ? 
+            <IconBtn 
+              title={user.username}
+              src={user.avatar.url}
+              color={isProfile ? theme : 'inherit'}
+              sx={{
+                  display: { xs: 'none', sm: 'flex' }
+              }}
+              onClick={openProfile}
+            />
+            : 
+            <IconBtn 
+              title={user.username}
+              icon={<ProfileIcon />}
+              color={isProfile ? theme : 'inherit'}
+              sx={{
+                  display: { xs: 'none', sm: 'flex' }
+              }}
+              onClick={openProfile}
+            />
+          }
       </AppBar>
       {
         isSearch && (
