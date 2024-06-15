@@ -1,5 +1,5 @@
 import { AppBar, Avatar, Backdrop, Box, Toolbar, Typography } from '@mui/material'
-import React, { Suspense, lazy } from 'react'
+import React, { Suspense, lazy, useRef, useState } from 'react'
 import { purple } from '../constants/color.js';
 import {
   Search as SearchIcon,
@@ -16,6 +16,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setIsNewGroup, setIsNotification, setIsProfile, setIsSearch } from '../redux/reducers/misc.js';
 import { resetNotificationCount } from '../redux/reducers/chat.js';
+import MenuAnchor from '../dialogs/MenuAnchor.jsx';
 
 const SearchDialog = lazy(() => import('../dialogs/Search.jsx'));
 const NotificationDialog = lazy(() => import('../dialogs/Notification.jsx'));
@@ -26,6 +27,10 @@ const SideBar = ({ chatId }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  const profileAnchor = useRef(null);
 
   const { user } = useSelector((store) => store.auth);
   const { isSearch, isNotification, isNewGroup, isProfile } = useSelector((store) => store.misc);
@@ -44,7 +49,15 @@ const SideBar = ({ chatId }) => {
     dispatch(resetNotificationCount())
   }
   const openNewGroup = () => dispatch(setIsNewGroup(true));
-  const openProfile = () => dispatch(setIsProfile(true));
+  const openProfile = () => { 
+    setIsOpen(false);
+    dispatch(setIsProfile(true));
+  }
+
+  const handleMenuOpen = (e) => {
+    setIsOpen(true);
+    profileAnchor.current = e.currentTarget;
+  }
 
   return (
     <>
@@ -70,6 +83,13 @@ const SideBar = ({ chatId }) => {
             top: { sm: 0, xs: 'auto' }
           }}
         >
+          <MenuAnchor 
+            isOpen={isOpen} 
+            setIsOpen={setIsOpen} 
+            dispatch={dispatch} 
+            menuAnchor={profileAnchor} 
+            openProfile={openProfile}
+          />
           <Typography
             variant="h6"
             sx={{
@@ -124,7 +144,7 @@ const SideBar = ({ chatId }) => {
               sx={{
                   display: { xs: 'none', sm: 'flex' }
               }}
-              onClick={openProfile}
+              onClick={handleMenuOpen}
             />
             : 
             <IconBtn 
@@ -134,7 +154,7 @@ const SideBar = ({ chatId }) => {
               sx={{
                   display: { xs: 'none', sm: 'flex' }
               }}
-              onClick={openProfile}
+              onClick={handleMenuOpen}
             />
           }
       </AppBar>
