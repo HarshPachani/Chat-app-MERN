@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useEffect, useState } from 'react'
+import React, { Suspense, lazy, memo, useEffect, useRef, useState } from 'react'
 import { Backdrop, Stack } from '@mui/material'
 import ChatItem from '../shared/ChatItem'
 import { white } from '../constants/color'
@@ -11,14 +11,13 @@ import IconBtn from './IconButton'
 import { AccountCircle as ProfileIcon } from '@mui/icons-material'
 import { useDispatch, useSelector } from 'react-redux'
 import { setIsProfile } from '../redux/reducers/misc'
-
+import MenuAnchor from '../dialogs/MenuAnchor.jsx'
 
 const ProfileDialog = lazy(() => import('../dialogs/ProfileDialog.jsx'));
 
 const ChatList = ({
     w = '30%',
     chats = [],
-    // chatId,
     newMessagesAlert = [
         {
           chatId: "",
@@ -32,12 +31,17 @@ const ChatList = ({
     const params = useParams();
     const chatId = params?.id;
 
+    const profileAnchor = useRef(null);
+
     const [search, setSearch] = useState('');
     const [userChats, setUserChats] = useState([]);
+    const [isOpen, setIsOpen] = useState(false);
 
     const { isProfile } = useSelector(store => store.misc);
+    const { theme } = useSelector(store => store.chat);
 
     useEffect(() => {
+        console.log("Rerendering...");
         setUserChats(chats);
     }, [chats])
 
@@ -45,52 +49,50 @@ const ChatList = ({
         if(search.trim() === '') {
             setUserChats(chats);
         }
+        const filteredChats  = chats.filter(chat => chat.name.toLowerCase().includes(search.toLowerCase().trim()));
+        setUserChats(filteredChats);
     }, [search]);
-
 
     const handleSearchChange = (e) => {
         setSearch(e.target.value);
-        if(search.trim() == '') {
-            setUserChats(chats);
-            return
-        }
-        chats = chats.filter(chat => chat.name.toLowerCase().includes(search.toLowerCase().trim()));
-        setUserChats(chats);
+    }
+    
+    const openProfile = () => {
+        setIsOpen(false);
+        dispatch(setIsProfile(true));
     }
 
-    
-  const openProfile = () => dispatch(setIsProfile(true));
+    const handleMenuOpen = (e) => {
+        setIsOpen(true);
+        profileAnchor.current = e.currentTarget;
+    }
 
 
   return (
     <>
     <Box
         sx={{
-            // display: chatId ? 'none' : 'flex',
             display: { xs: chatId ? 'none' : 'flex', sm: 'flex' },
-            // display: 'flex',
             flexDirection: 'column',
             borderBottom: '1px solid black',
-            width: { xs: '100%', sm: '30%' },
-            // height: '100%',
-            // overflow: 'scroll',
-
+            width: { xs: '100%', sm: '50%' },
         }}
     >
-                
+        <MenuAnchor 
+            isOpen={isOpen} 
+            setIsOpen={setIsOpen} 
+            dispatch={dispatch} 
+            menuAnchor={profileAnchor} 
+            openProfile={openProfile}
+        />
+        
         <Box
-            //   sx={{
-            //   marginBottom: '5px',
-            //   borderRadius: '20px'
-            //   }}
             sx={{
                 display: 'flex',
                 flexDirection: { xs: 'column', md: 'row' },
                 justifyContent: 'space-around',
                 alignItems: 'center',
                 backgroundColor: white,
-                // backgroundColor: 'black',
-                // color: 'white',
                 borderRadius: '15px',
                 padding: '5px',
                 position: 'sticky',
@@ -109,14 +111,28 @@ const ChatList = ({
                 }}
             >
                 <Typography variant='h5' sx={{ marginLeft: '5px' }}>Chats</Typography>
-                <IconBtn 
-                    title={user?.username}
-                    icon={<ProfileIcon />}
-                    sx={{
-                        display: { xs: 'flex', sm: 'none' }
-                    }}
-                    onClick={openProfile}
-                />
+                {
+                    user?.avatar?.url ? 
+                    <IconBtn 
+                        title={user?.username}
+                        src={user.avatar.url}
+                        color={isProfile ? theme : 'inherit'}
+                        sx={{
+                            display: { xs: 'flex', sm: 'none' }
+                        }}
+                        onClick={handleMenuOpen}
+                    />
+                    : 
+                    <IconBtn 
+                        title={user?.username}
+                        icon={<ProfileIcon />}
+                        color={isProfile ? theme : 'inherit'}
+                        sx={{
+                            display: { xs: 'flex', sm: 'none' }
+                        }}
+                        onClick={handleMenuOpen}
+                    />
+                }
             </Box>
             <InputBox 
                 placeholder="Search Friends..."
@@ -141,7 +157,7 @@ const ChatList = ({
                 top: 0
             }}
         >
-            {
+            { userChats?.length > 0 ? (
                 userChats?.map((data, index) => {
                 const { avatar, _id, name, groupChat, members } = data;
                 const newMessageAlert = newMessagesAlert.find(({ chatId }) => chatId === _id )
@@ -162,6 +178,11 @@ const ChatList = ({
                     />
                 )
                 })
+                ) : (
+                    <Typography textAlign="center" padding="1rem">
+                        No chats
+                    </Typography>
+                )
             }
         </Stack>
     </Box>
@@ -176,4 +197,4 @@ const ChatList = ({
   )
 }
 
-export default ChatList;
+export default memo(ChatList);
