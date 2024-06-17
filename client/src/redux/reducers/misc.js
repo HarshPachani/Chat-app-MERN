@@ -6,6 +6,13 @@ const initialState = {
     isNewGroup: false,
     isAddMember: false,
     isProfile: false,
+    isFileMenu: false,
+    uploadingLoader: false,
+    isDeleteMenu: false,
+    selectedDeleteChat: {
+        chatId: '',
+        groupChat: false,
+    }
 }
 
 const miscSlice = createSlice({
@@ -26,7 +33,19 @@ const miscSlice = createSlice({
         },
         setIsProfile: (state, action) => {
             state.isProfile = action.payload;
-        }
+        },
+        setIsFileMenu: (state, action) => {
+            state.isFileMenu = action.payload;
+        },
+        setUploadingLoader: (state, action) => {
+            state.uploadingLoader = action.payload;
+        },
+        setIsDeleteMenu: (state, action) => {
+            state.isDeleteMenu = action.payload;
+        },
+        setSelectedDeleteChat: (state, action) => {
+            state.selectedDeleteChat = action.payload;
+        },
     }
 });
 
@@ -37,4 +56,8 @@ export const {
     setIsNewGroup,
     setIsAddMember,
     setIsProfile,
+    setIsFileMenu,
+    setUploadingLoader,
+    setIsDeleteMenu,
+    setSelectedDeleteChat,
 } = miscSlice.actions;
