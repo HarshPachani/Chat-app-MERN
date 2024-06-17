@@ -4,8 +4,9 @@ import { Chat } from "../models/chat.js";
 import { User } from "../models/user.js";
 import { Message } from "../models/message.js";
 import { ErrorHandler } from "../utils/utility.js";
-import { emitEvent } from "../utils/features.js";
+import { deleteFilesFromCloudinary, emitEvent, uploadFilesToCloudinary } from "../utils/features.js";
 import { ALERT, NEW_MESSAGE, NEW_MESSAGE_ALERT, REFETCH_CHATS, REFETCH_GROUP_CHAT_LIST, REFETCH_GROUP_CHAT_MEMBERS } from "../constants/events.js";
+import mongoose from "mongoose";
 
 const newGroupChat = TryCatch(async (req, res, next) => {
     const { name, members } = req.body;
@@ -69,7 +70,13 @@ const sendAttachments = TryCatch(async(req, res, next) => {
     if(!chat)
         return next(new ErrorHandler('Chat not found', 404));
 
+    const attachmentsLimit = await Message.find({ sender: req.user, attachments: { $ne: [] }});
+    if(attachmentsLimit?.length >= 3) {
+        return res.status(400).json({ success: false, message: 'You have exceed your Attachment uploading limit'});
+    }
+
     //uploads files
+    const attachments = await uploadFilesToCloudinary(files);
     
     const messageForDB = {
         content: '',
@@ -86,7 +93,7 @@ const sendAttachments = TryCatch(async(req, res, next) => {
         }
     }
 
-    const message = Message.create(messageForDB);
+    const message = await Message.create(messageForDB);
 
     emitEvent(req, NEW_MESSAGE, chat.members, {
         message: messageForRealTime,
@@ -363,7 +370,7 @@ const deleteChat = TryCatch(async(req, res, next) => {
 
     await Promise.all([
         //Delete files from cloudinary
-        // deleteFilesFromCloudinary(public_ids),
+        deleteFilesFromCloudinary(public_ids),
         chat.deleteOne(),
         Message.deleteMany({ chat: chatId }),
     ]);
