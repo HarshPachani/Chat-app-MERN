@@ -1,16 +1,19 @@
 import { Avatar, Box, Tooltip, Typography, IconButton } from '@mui/material'
 import React, { memo } from 'react'
 import { white } from '../constants/color'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { KeyboardBackspace as KeyboardBackspaceIcon } from '@mui/icons-material'
 import AvatarCard from '../shared/AvatarCard'
+import LinearScaleIcon from '@mui/icons-material/LinearScale';
 
-const ChatHeader = ({ chatMemberDetails }) => {
+const ChatHeader = ({ chatMemberDetails, handleDeleteChat }) => {
     const navigate = useNavigate();
     console.log("Rerendering....");
-
+    const params = useParams();
+    const id = params?.id;
+    
     const navigateBack = () => navigate('/')
-  
+
   return (
     <Box
         sx={{
@@ -39,7 +42,11 @@ const ChatHeader = ({ chatMemberDetails }) => {
             :
             <Avatar />
         }
-        <Box>
+        <Box 
+            sx={{
+                marginLeft: { xs: '0.5rem', sm: '1rem' }
+            }}
+        >
             <Typography variant='h5'>{chatMemberDetails?.chatName}</Typography>
             {
                 chatMemberDetails?.isGroupChat ? 
@@ -61,6 +68,14 @@ const ChatHeader = ({ chatMemberDetails }) => {
                     fontSize: '0.85rem',
                 }}>online</Typography>
             }
+        </Box>
+        <Box 
+            position={'absolute'} 
+            right={0} 
+            textAlign={'center'}
+            onClick={(e) => handleDeleteChat(e, id, chatMemberDetails?.isGroupChat)}
+        >
+            <LinearScaleIcon sx={{ transform: 'rotate(90deg)' }}/>
         </Box>
     </Box>
   )
