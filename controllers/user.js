@@ -7,6 +7,8 @@ import { ErrorHandler } from "../utils/utility.js";
 import { compare } from 'bcrypt';
 import { getOtherMember } from "../lib/helper.js";
 import { NEW_REQUEST, REFETCH_CHATS, REFETCH_PROFILE } from "../constants/events.js";
+import { Message } from "../models/message.js";
+import mongoose from "mongoose";
 
 const newUser = TryCatch(async(req, res, next) => {
   const { name, username, password, bio } = req.body;
@@ -26,6 +28,22 @@ const newUser = TryCatch(async(req, res, next) => {
   }
   
   const user = await User.create({ name, username, password, bio, avatar });
+
+  
+  const adminId = '66614e998b7ac3a94c230bf3';
+
+  const adminUserChat = await Chat.create({ name: 'Admin', groupChat: false, members: [new mongoose.Types.ObjectId(adminId), user?._id] });
+  const adminMessage = [
+    `Hello, ${name}`, 
+    'Welcome to WeChat', 
+    'I would like to tell you that this app has various features', 
+    'One of the feature is Attachments, which means you can Send Image, Video or Audio of Maximum 2MB size',
+    'But You can only send 3 Attachments with this account'
+  ] 
+  
+  for (const message of adminMessage) {
+    await Message.create({ sender: adminId, chat: adminUserChat?._id, content: message });
+  }
 
   sendToken(res, user, 201, 'User Created Successfully!');
 });
