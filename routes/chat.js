@@ -15,7 +15,7 @@ router.get('/my/groups', getMyGroups);
 router.put('/addmembers', addMemberValidator(), validateHandler, addMembers);
 router.put('/removemember', removeMemberValidator(), validateHandler, removeMembers);
 
-router.delete('/leave/:id', chatIdValidator, validateHandler, leaveGroup);
+router.delete('/leave/:id', chatIdValidator(), validateHandler, leaveGroup);
 
 router.post('/message', attachmentsMulter, sendAttachmentsValidator(), validateHandler, sendAttachments);
 
