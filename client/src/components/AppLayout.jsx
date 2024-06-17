@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import Title from '../shared/Title'
 import SideBar from './SideBar'
 import { Box, TextField, Typography } from '@mui/material'
@@ -13,6 +13,8 @@ import { useSocketEvents } from '../hooks/Hook'
 import { CHAT_JOINED, NEW_MESSAGE_ALERT, NEW_REQUEST, ONLINE_USERS, ONLINE_USER_DELETE, REFETCH_CHATS } from '../constants/events'
 import { incrementNotification, setNewMessagesAlert, setNewMessageCount } from '../redux/reducers/chat.js'
 import { getOrSaveFromStorage } from '../lib/features'
+import { setIsDeleteMenu, setSelectedDeleteChat } from '../redux/reducers/misc.js'
+import DeleteChatMenu from '../dialogs/DeleteChatMenu.jsx'
 
 const appLayout = () => (WrappedComponent) => {
     return (props) => {
@@ -28,6 +30,7 @@ const appLayout = () => (WrappedComponent) => {
         const navigate = useNavigate();
 
         const chatId = params.id;
+        const deleteMenuAnchor = useRef(null);
         
         const { isLoading, data, isError, error, refetch } = useMyChatsQuery('');
 
@@ -45,6 +48,12 @@ const appLayout = () => (WrappedComponent) => {
             socket.emit(ONLINE_USERS, {});
             return () => socket.emit(ONLINE_USER_DELETE, { userId: user._id });
         }, []);
+
+        const handleDeleteChat = (e, _id, groupChat) => {
+            dispatch(setIsDeleteMenu(true));
+            dispatch(setSelectedDeleteChat({ chatId: _id, groupChat }));
+            deleteMenuAnchor.current = e.currentTarget;
+        }
 
         const newMessageAlertListener = useCallback((data) => {
             if(data.chatId === chatId) return;
@@ -88,17 +97,19 @@ const appLayout = () => (WrappedComponent) => {
             >
                 <Title />
                 <SideBar chatId={chatId} />
+                <DeleteChatMenu dispatch={dispatch} deleteMenuAnchor={deleteMenuAnchor} />
                 <ChatList 
                     chats={data?.chats} 
                     newMessagesAlert={newMessageAlert} 
                     onlineUsers={onlineUsers}
                     user={user}
-                />
+                    />
                 <WrappedComponent 
                     {...props}
                     chatId={chatId} 
                     user={user}
                     chats={sampleMessage} 
+                    handleDeleteChat={handleDeleteChat}
                 />
         </Box>)
     }
