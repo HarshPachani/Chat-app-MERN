@@ -12,6 +12,7 @@ import { AccountCircle as ProfileIcon } from '@mui/icons-material'
 import { useDispatch, useSelector } from 'react-redux'
 import { setIsProfile } from '../redux/reducers/misc'
 import MenuAnchor from '../dialogs/MenuAnchor.jsx'
+import OptionChip from './OptionChip.jsx'
 
 const ProfileDialog = lazy(() => import('../dialogs/ProfileDialog.jsx'));
 
@@ -36,6 +37,7 @@ const ChatList = ({
     const [search, setSearch] = useState('');
     const [userChats, setUserChats] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
+    const [optionType, setOptionType] = useState('all');
 
     const { isProfile } = useSelector(store => store.misc);
     const { theme } = useSelector(store => store.chat);
@@ -43,15 +45,36 @@ const ChatList = ({
     useEffect(() => {
         console.log("Rerendering...");
         setUserChats(chats);
-    }, [chats])
+    }, [chats]);
+
+    const filterOptions = () => {
+        switch (optionType) {
+            case 'all':
+                setUserChats(chats);
+                break;
+            case 'unread':
+                const unreadChats = chats?.filter(chat => newMessagesAlert.some(unreadChat => unreadChat.chatId === chat._id));
+                setUserChats(unreadChats);
+                break;
+            case 'group':
+                const groupChats = chats?.filter(chat => chat?.groupChat === true);
+                setUserChats(groupChats);
+                break;
+        }
+    }
 
     useEffect(() => {
         if(search.trim() === '') {
-            setUserChats(chats);
+            filterOptions();
+            return;
         }
-        const filteredChats  = chats.filter(chat => chat.name.toLowerCase().includes(search.toLowerCase().trim()));
+        const filteredChats  = userChats.filter(chat => chat.name.toLowerCase().includes(search.toLowerCase().trim()));
         setUserChats(filteredChats);
     }, [search]);
+    
+    useEffect(() => {
+        filterOptions();
+    }, [optionType]);
 
     const handleSearchChange = (e) => {
         setSearch(e.target.value);
@@ -67,7 +90,6 @@ const ChatList = ({
         profileAnchor.current = e.currentTarget;
     }
 
-
   return (
     <>
     <Box
@@ -75,7 +97,7 @@ const ChatList = ({
             display: { xs: chatId ? 'none' : 'flex', sm: 'flex' },
             flexDirection: 'column',
             borderBottom: '1px solid black',
-            width: { xs: '100%', sm: '50%' },
+            width: { xs: '100%', sm: '30%' },
         }}
     >
         <MenuAnchor 
@@ -140,7 +162,12 @@ const ChatList = ({
                 onChange={handleSearchChange}
             />
         </Box>
-                    
+
+        <OptionChip
+            optionType={optionType}
+            setOptionType={setOptionType}
+        />
+
         <Stack 
             // width={w} 
             direction={'column'}
@@ -174,7 +201,6 @@ const ChatList = ({
                         _id={_id}
                         groupChat={groupChat}
                         sameSender={chatId === _id}
-                        // handleDeleteChat={handleDeleteChat}
                     />
                 )
                 })
