@@ -1,5 +1,5 @@
 import { Avatar, Box, Dialog, IconButton, Stack, TextField, Typography } from '@mui/material'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setIsProfile } from '../redux/reducers/misc';
 import moment from 'moment';
@@ -9,6 +9,7 @@ import {
     CalendarMonth as CalendarIcon,
     Edit as EditIcon,
     Done as DoneIcon,
+    CameraAlt as CameraAltIcon,
 } from '@mui/icons-material'
 import { useAsyncMutation, useSocketEvents } from '../hooks/Hook';
 import { useUpdateProfileMutation } from '../redux/api/api';
@@ -20,11 +21,17 @@ import toast from 'react-hot-toast';
 import themes from '../constants/themes';
 import IconBtn from '../components/IconButton';
 import { setTheme } from '../redux/reducers/chat';
+import { VisuallyHiddenInput } from '../styles/StyledComponents';
+import { useFileHandler } from '6pp';
 
 const ProfileDialog = () => {
     const { isProfile } = useSelector((store) => store.misc);
     const { user } = useSelector(store => store.auth);
     const socket = useSocket();
+
+    const [isProfileChange, setIsProfileChange] = useState(false);
+
+    const avatar = useFileHandler('single', 2);
 
     const dispatch = useDispatch();
     const [updateField] = useAsyncMutation(useUpdateProfileMutation);
@@ -52,19 +59,103 @@ const ProfileDialog = () => {
         dispatch(setTheme(themeName));
     }
 
+    const handleProfileChange = async (e) => {
+        e.preventDefault();
+        const toastId = toast.loading('Changing Profile Picture...');
+        const formData = new FormData();
+        formData.append('avatar', avatar.file);
+
+        const config = {
+            withCredentials: true,
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+        };
+      
+        try {
+            const { data } = await axios.put(
+              `${process.env.REACT_APP_SERVER_URL}/api/v1/user/profile/update/avatar`,
+              formData,
+              config
+            );
+    
+            toast.success(data.message, { id: toastId });
+        } catch (error) {
+            toast.error(error?.response?.data?.message, { id: toastId });
+        } finally {
+            setIsProfileChange(false);
+        }
+    }
+
+    useEffect(() => {
+        avatar.preview = user?.avatar?.url;
+    }, []);
+
+    const handleAvatarChange = (e) => {
+        avatar.changeHandler(e);
+        setIsProfileChange(true);
+    }
+
   return (
     <Dialog open={isProfile} onClose={() => dispatch(setIsProfile(false))} fullWidth={true}>
         <Stack spacing={'2rem'} direction='column' alignItems='center' sx={{ margin: '15px' }}>
-            <Avatar 
-                src={user?.avatar?.url}
-                sx={{
-                width: 200,
-                height: 200,
-                objectFit: 'contain',
-                marginBottom: '1rem',
-                border: '5px solid white'
+             <form
+                style={{
+                  width: '100%',
+                  marginTop: '1rem',
                 }}
-            />
+                onSubmit={handleProfileChange}
+            >
+                <Stack position='relative' width='10rem' margin='auto'>
+                  <Avatar
+                    sx={{
+                      width: '10rem',
+                      height: '10rem',
+                      objectFit: 'contain',
+                    }}
+                    src={(user?.avatar?.url && !isProfileChange )? user.avatar.url : avatar.preview}
+                  />
+
+                  <IconButton
+                    sx={{
+                      position: 'absolute',
+                      bottom: '0',
+                      right: '0',
+                      color: 'white',
+                      bgcolor: 'rgba(0, 0, 0, 0.5)',
+                      ':hover': {
+                        bgcolor: 'rgba(0, 0, 0, 0.7)',
+                      },
+                    }}
+                    component='label'
+                  >
+                    <>
+                      <CameraAltIcon />
+                      <VisuallyHiddenInput
+                        onChange={handleAvatarChange}
+                        type='file'
+                      />
+                    </>
+                  </IconButton>
+                  {
+                  isProfileChange && 
+                    <IconButton type='submit' sx={{width: 'fit-content'}} onClick={handleProfileChange}>
+                        <DoneIcon />
+                    </IconButton>
+                  }
+                </Stack>
+                {avatar.error && (
+                  <Typography
+                    m='1rem auto'
+                    width='fit-content'
+                    display='block'
+                    color='error'
+                    variant='caption'
+                  >
+                    {avatar.error}
+                  </Typography>
+                )}
+            </form>
             <ProfileCard heading={'Username'} text={user?.username} Icon={<UserNameIcon />} edit={true} editHandler={editHandler} />
             <ProfileCard heading={'Bio'} text={user?.bio} edit={true} editHandler={editHandler} />
             <ProfileCard heading={'Name'} text={user?.name} Icon={<FaceIcon />} edit={true} editHandler={editHandler} />
