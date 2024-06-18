@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux'
 const OptionChip = ({ optionType, setOptionType }) => {
     const { theme } = useSelector(store => store.chat);
   return (
-    <Box display={'flex'} alignItems={'center'} gap={1} marginLeft={'0.5rem'}>
+    <Box display={'flex'} alignItems={'center'} gap={1} margin={'0.5rem'} marginTop={0} padding={'0.5rem'} borderRadius={'1rem'}>
         <Chip
           label="All" 
           variant={optionType==='all' ? 'filled' : 'outlined'}
