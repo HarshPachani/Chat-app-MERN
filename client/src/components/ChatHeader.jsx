@@ -1,17 +1,33 @@
 import { Avatar, Box, Tooltip, Typography, IconButton } from '@mui/material'
-import React, { memo } from 'react'
+import React, { memo, useCallback, useState } from 'react'
 import { white } from '../constants/color'
 import { useNavigate, useParams } from 'react-router-dom'
 import { KeyboardBackspace as KeyboardBackspaceIcon } from '@mui/icons-material'
 import AvatarCard from '../shared/AvatarCard'
-import LinearScaleIcon from '@mui/icons-material/LinearScale';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { useSocketEvents } from '../hooks/Hook'
+import { ONLINE_USERS } from '../constants/events'
 
-const ChatHeader = ({ chatMemberDetails, handleDeleteChat }) => {
+const ChatHeader = ({ socket, chatMemberDetails, handleDeleteChat }) => {
     const navigate = useNavigate();
-    console.log("Rerendering....");
     const params = useParams();
     const id = params?.id;
-    
+    const [isOnline, setIsOnline] = useState(false);
+
+    const onlineUserListener = useCallback((data) => {
+        const isUserOnline = (data?.includes(chatMemberDetails?.chatAvatar[0]?._id));
+        if(isUserOnline) {
+            setIsOnline(true);
+        }
+    });
+
+    const eventHandlers = {
+        [ONLINE_USERS]: onlineUserListener,
+    }
+
+    useSocketEvents(socket, eventHandlers);
+
+
     const navigateBack = () => navigate('/')
 
   return (
@@ -63,20 +79,23 @@ const ChatHeader = ({ chatMemberDetails, handleDeleteChat }) => {
                     </Typography>
                 </Tooltip>
                 : 
+                isOnline && (
                 <Typography sx={{
                     color: 'gray',
                     fontSize: '0.85rem',
-                }}>online</Typography>
+                }}>online</Typography>)
             }
         </Box>
-        <Box 
-            position={'absolute'} 
-            right={0} 
-            textAlign={'center'}
+        <IconButton
+            sx={{
+                position: 'absolute',
+                right: '0',
+                color: 'black'
+            }}
             onClick={(e) => handleDeleteChat(e, id, chatMemberDetails?.isGroupChat)}
         >
-            <LinearScaleIcon sx={{ transform: 'rotate(90deg)' }}/>
-        </Box>
+            <MoreVertIcon />
+        </IconButton>
     </Box>
   )
 }
