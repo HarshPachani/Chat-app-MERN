@@ -2,7 +2,7 @@ import { TryCatch } from "../middlewares/error.js"
 import { User } from '../models/user.js';
 import { Chat } from '../models/chat.js';
 import { Request } from '../models/request.js';
-import { cookieOptions, emitEvent, sendToken, uploadFilesToCloudinary } from "../utils/features.js";
+import { cookieOptions, deleteFilesFromCloudinary, emitEvent, sendToken, uploadFilesToCloudinary } from "../utils/features.js";
 import { ErrorHandler } from "../utils/utility.js";
 import { compare } from 'bcrypt';
 import { getOtherMember } from "../lib/helper.js";
@@ -18,7 +18,7 @@ const newUser = TryCatch(async(req, res, next) => {
   if(isExists) 
     return next(new ErrorHandler('Username already Exists!', 400));
 
-  let avatar = [];
+  let avatar = {};
   if(file) {
     const result = await uploadFilesToCloudinary([file]);
     avatar = {
@@ -257,8 +257,37 @@ const updateProfile = TryCatch(async(req, res, next) => {
       message: `${field} Updated Successfully!`,
     });
   }
-
   
+  return next(new ErrorHandler('User not found', 400));
+});
+
+const updateProfilePic = TryCatch(async(req, res, next) => {
+  const file = req.file || [];
+  
+  const userProfile = await User.findById(req.user);
+
+  if(userProfile) {
+
+    if(userProfile?.avatar?.public_id) {
+      await deleteFilesFromCloudinary(userProfile?.avatar?.public_id);
+    }
+
+    if(file) {
+      const result = await uploadFilesToCloudinary([file]);
+      userProfile.avatar = {
+        public_id: result[0].public_id,
+        url: result[0].url,
+      }
+    }
+    await userProfile.save();
+    
+    emitEvent(req, REFETCH_PROFILE, [req.user]);
+    return res.status(201).json({
+      success: true,
+      message: `Profile Updated Successfully!`,
+    });
+  }
+
   return next(new ErrorHandler('User not found', 400));
 });
 
@@ -274,4 +303,5 @@ export {
   allNotifications,
   getMyFriends,
   updateProfile,
+  updateProfilePic,
 }
