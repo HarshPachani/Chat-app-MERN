@@ -2,23 +2,22 @@ import React, { memo, useCallback, useEffect, useRef, useState } from 'react'
 import AppLayout from '../components/AppLayout'
 import { Avatar, Box, CircularProgress, IconButton, Stack, TextField, Tooltip, Typography } from '@mui/material'
 import { gray, orange, white } from '../constants/color'
-import ChatItem from '../shared/ChatItem'
-import AvatarCard from '../shared/AvatarCard'
 import { AttachFile as AttachFileIcon, KeyboardBackspace as KeyboardBackspaceIcon, Send as SendIcon } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
-import { sampleMessage } from '../constants/sampleData'
 import MessageComponent from '../components/MessageComponent'
 import { InputBox } from '../styles/StyledComponents'
 import { useSocket } from '../context/socket'
-import { ALERT, GROUP_USER_STOPPED_TYPING, GROUP_USER_TYPING, NEW_MESSAGE, START_TYPING, STOP_TYPING } from '../constants/events'
+import { ALERT, CHAT_JOINED, GROUP_USER_STOPPED_TYPING, GROUP_USER_TYPING, NEW_MESSAGE, START_TYPING, STOP_TYPING } from '../constants/events'
 import { useGetChatDetailsQuery, useGetMessagesQuery, useGetOtherChatMemberQuery } from '../redux/api/api'
 import { useErrors, useSocketEvents } from '../hooks/Hook'
 import { TypingLoader } from '../layout/Loaders'
 import { useDispatch, useSelector } from 'react-redux'
 import { removeNewMessagesAlert } from '../redux/reducers/chat'
 import ChatHeader from '../components/ChatHeader'
+import { setIsFileMenu } from '../redux/reducers/misc'
+import FileMenu from '../dialogs/FileMenu'
 
-const Chat = ({ chatId, user, chats=[] }) => {
+const Chat = ({ chatId, user, chats=[], handleDeleteChat }) => {
     const navigate = useNavigate();
     const [message, setMessage] = useState('');
     const [page, setPage] = useState(1);
@@ -33,6 +32,7 @@ const Chat = ({ chatId, user, chats=[] }) => {
     const [messages, setMessages] = useState([]);
     const [userTyping, setUserTyping] = useState('');
     const [iAmTyping, setIAmTyping] = useState(false);
+    const [fileMenuAnchor, setFileMenuAnchor] = useState(null);
 
     const [allMessages, setAllMessages] = useState([]);
 
@@ -46,8 +46,6 @@ const Chat = ({ chatId, user, chats=[] }) => {
 
     const { theme } = useSelector(store => store.chat);
 
-    
-
     const errors = [
         { isError: chatDetails.isError, error: chatDetails.error },
         // { isError: data.isError, error: data.error },
@@ -58,6 +56,7 @@ const Chat = ({ chatId, user, chats=[] }) => {
     // const allMessages = [];
     
     useEffect(() => {
+        socket.emit(CHAT_JOINED, { userId: user?._id, members })
         dispatch(removeNewMessagesAlert(chatId));
 
         return () => {
@@ -72,25 +71,20 @@ const Chat = ({ chatId, user, chats=[] }) => {
         if(bottomRef.current && page===1) bottomRef.current.scrollIntoView({ behaviour: 'smooth' });
     }, [messages]);
 
-    useEffect(() => {
-        if(containerRef.current) containerRef.current.scrollIntoView({ behaviour: 'smooth' });
-    }, [allMessages]);
+    // useEffect(() => {
+    //     if(containerRef.current) containerRef.current.scrollIntoView({ behaviour: 'smooth' });
+    // }, [allMessages]);
 
     useEffect(() => {
         if(data) {
-            // console.log(data);
-            setMessages(data ? [...data.messages, ...messages] : [...messages]);
             setTotalPages(data?.totalPages);
+            setMessages(data ? [...data.messages, ...messages] : [...messages]);
         }
     }, [data]);
-
-    useEffect(() => console.log(totalPages), [totalPages]);
 
     useEffect(() => {
         const handleScroll = () => {
             if (chatListRef.current.scrollTop === 0) {
-                // console.log(page, totalPages);
-                // console.log(page === totalPages);
                 if(page === totalPages) {
                     setPage(totalPages)
                     return;
@@ -105,7 +99,7 @@ const Chat = ({ chatId, user, chats=[] }) => {
         return () => {
             chatListElement.removeEventListener('scroll', handleScroll);
         };
-    }, []);
+    }, [totalPages, page]);
 
 
     const handleMessageChange = (e) => {
@@ -127,6 +121,11 @@ const Chat = ({ chatId, user, chats=[] }) => {
             socket.emit(STOP_TYPING, { members, chatId });
             setIAmTyping(false);
         }, 1500);
+    }
+
+    const handleFileOpen = (e) => {
+        dispatch(setIsFileMenu(true));
+        setFileMenuAnchor(e.currentTarget);
     }
 
     const navigateBack = () => {
@@ -207,7 +206,7 @@ const Chat = ({ chatId, user, chats=[] }) => {
             height: '100vh',
         }}
     >
-        <ChatHeader chatMemberDetails={chatMemberDetails} />
+        <ChatHeader socket={socket} chatMemberDetails={chatMemberDetails} handleDeleteChat={handleDeleteChat} />
         {isLoading && 
             <Box alignItems={'center'}>
                 <CircularProgress />
@@ -253,11 +252,11 @@ const Chat = ({ chatId, user, chats=[] }) => {
             onSubmit={submitHandler}
         >
             <Stack
-                direction={"row"}
-                height="100%"
-                padding="1rem"
-                alignItems="center"
-                position={"relative"}
+                direction={'row'}
+                height='100%'
+                padding='1rem'
+                alignItems='center'
+                position={'relative'}
                 sx={{
                     backgroundColor: white,
                     borderRadius: '15px'
@@ -265,18 +264,18 @@ const Chat = ({ chatId, user, chats=[] }) => {
             >
                 <IconButton
                     sx={{
-                        position: "absolute",
-                        left: "1.5rem",
-                        rotate: "30deg",
+                        position: 'absolute',
+                        left: '1.5rem',
+                        rotate: '30deg',
                         color: 'black'
                     }}
-                    // onClick={handleFileOpen}
+                    onClick={handleFileOpen}
                 >
                     <AttachFileIcon />
                 </IconButton>
 
                 <InputBox 
-                    placeholder="Type Message Here..."
+                    placeholder='Type Message Here...'
                     value={message}
                     onChange={handleMessageChange}
                 />
@@ -285,16 +284,18 @@ const Chat = ({ chatId, user, chats=[] }) => {
                     type='submit'
                     sx={{
                         bgcolor: gray,
-                        rotate: "-30deg",
+                        rotate: '-30deg',
                         color: theme,
-                        marginLeft: "1rem",
-                        padding: "0.5rem",
+                        marginLeft: '1rem',
+                        padding: '0.5rem',
                     }}
                 >
                     <SendIcon />
                 </IconButton>
             </Stack>
         </form>
+
+        <FileMenu anchorE1={fileMenuAnchor} chatId={chatId} />
     </Box>
   )
 }
