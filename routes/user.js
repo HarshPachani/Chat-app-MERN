@@ -1,6 +1,6 @@
 import express from 'express';
 import { registerValidator, validateHandler, loginValidator, sendFriendRequestValidator, acceptFriendRequestValidator } from '../lib/validators.js';
-import { getMyProfile, login, logout, newUser, searchUser, searchFriends, sendFriendRequest, acceptFriendRequest,allNotifications, getMyFriends, updateProfile } from '../controllers/user.js';
+import { getMyProfile, login, logout, newUser, searchUser, searchFriends, sendFriendRequest, acceptFriendRequest,allNotifications, getMyFriends, updateProfile, updateProfilePic } from '../controllers/user.js';
 import { isAuthenticated } from '../middlewares/auth.js';
 import { singleAvatar } from '../middlewares/multer.js';
 
@@ -16,6 +16,7 @@ router.get('/logout', logout);
 router.get('/search-user', searchUser);
 
 router.put('/profile/update', updateProfile);
+router.put('/profile/update/avatar', singleAvatar, updateProfilePic);
 router.put('/send-request', sendFriendRequestValidator() ,validateHandler, sendFriendRequest);
 router.put('/accept-request', acceptFriendRequestValidator() ,validateHandler, acceptFriendRequest);
 
