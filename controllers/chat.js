@@ -362,18 +362,25 @@ const deleteChat = TryCatch(async(req, res, next) => {
         attachments: { $exists: true, $ne: [] },
     });
 
-    const public_ids = [];
+    if(messagesWithAttachments?.length > 0) {
+        const public_ids = [];
+    
+        messagesWithAttachments.forEach(({ attachments }) =>
+            attachments.forEach(({ public_id }) => public_ids.push(public_id))
+        );
 
-    messagesWithAttachments.forEach(({ attachments }) =>
-        attachments.forEach(({ public_id }) => public_ids.push(public_id))
-    );
-
-    await Promise.all([
-        //Delete files from cloudinary
-        deleteFilesFromCloudinary(public_ids),
-        chat.deleteOne(),
-        Message.deleteMany({ chat: chatId }),
-    ]);
+        await Promise.all([
+            //Delete files from cloudinary
+            deleteFilesFromCloudinary(public_ids),
+            chat.deleteOne(),
+            Message.deleteMany({ chat: chatId }),
+        ]);
+    } else {
+        await Promise.all([
+            chat.deleteOne(),
+            Message.deleteMany({ chat: chatId }),
+        ]);
+    }
 
     emitEvent(req, REFETCH_CHATS, members);
 
