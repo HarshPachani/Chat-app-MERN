@@ -43,7 +43,6 @@ const ChatList = ({
     const { theme } = useSelector(store => store.chat);
 
     useEffect(() => {
-        console.log("Rerendering...");
         setUserChats(chats);
     }, [chats]);
 
@@ -119,7 +118,7 @@ const ChatList = ({
                 padding: '5px',
                 position: 'sticky',
                 top: 0,
-                height: { xs: '80px', sm: 'auto' }
+                height: 'auto'
             }}
             margin={'5px'}
         >
@@ -163,11 +162,6 @@ const ChatList = ({
             />
         </Box>
 
-        <OptionChip
-            optionType={optionType}
-            setOptionType={setOptionType}
-        />
-
         <Stack 
             // width={w} 
             direction={'column'}
@@ -184,9 +178,14 @@ const ChatList = ({
                 top: 0
             }}
         >
+            <OptionChip
+                optionType={optionType}
+                setOptionType={setOptionType}
+            />
+            
             { userChats?.length > 0 ? (
                 userChats?.map((data, index) => {
-                const { avatar, _id, name, groupChat, members } = data;
+                    const { avatar, _id, name, groupChat, members } = data;
                 const newMessageAlert = newMessagesAlert.find(({ chatId }) => chatId === _id )
                 const isOnline = members?.some((member) => onlineUsers.includes(member));
 
