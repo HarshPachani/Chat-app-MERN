@@ -1,4 +1,4 @@
-import { Box, Menu, Stack } from '@mui/material';
+import { Box, ListItemText, Menu, MenuItem, MenuList, Stack } from '@mui/material';
 import React, { useState } from 'react'
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -38,31 +38,23 @@ const MenuAnchor = ({ isOpen, setIsOpen, dispatch, menuAnchor, openProfile }) =>
             horizontal: 'center',
         }}
     >
-      <Stack
-        sx={{
-          width: '10rem',
-          padding: '0.5rem',
-          cursor: 'pointer',
-        }}
-        direction='column'
-        alignItems={'center'}
-        spacing='0.5rem'
-      >
-        <Box 
-            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+      <div style={{ width: '10rem' }}>
+        <MenuList>
+          <MenuItem
             onClick={openProfile}
-        >
-            <AccountBoxIcon />
-            MyProfile
-        </Box>
-        <Box 
-            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+          >
+              <AccountBoxIcon />
+              <ListItemText style={{ marginLeft: '0.5rem' }}>MyProfile</ListItemText>
+          
+          </MenuItem>
+          <MenuItem 
             onClick={handleLogout}
-        >
+          >
             <LogoutIcon />
-            Logout
-        </Box>
-      </Stack>
+            <ListItemText style={{ marginLeft: '0.5rem' }}>Logout</ListItemText>
+          </MenuItem>
+        </MenuList>
+      </div>
     </Menu>
   )
 }
