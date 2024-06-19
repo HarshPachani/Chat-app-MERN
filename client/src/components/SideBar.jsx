@@ -1,18 +1,17 @@
-import { AppBar, Avatar, Backdrop, Box, Toolbar, Typography } from '@mui/material'
+import { AppBar, Backdrop, Box, Typography } from '@mui/material'
 import React, { Suspense, lazy, useRef, useState } from 'react'
 import { purple } from '../constants/color.js';
 import {
   Search as SearchIcon,
   Add as AddIcon,
   Group as GroupIcon,
-  Logout as LogoutIcon,
   Notifications as NotificationsIcon,
   AccountCircle as ProfileIcon,
 } from '@mui/icons-material';
 import ChatIcon from '@mui/icons-material/Chat';
 import ForumIcon from '@mui/icons-material/Forum';
 import IconBtn from './IconButton';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setIsNewGroup, setIsNotification, setIsProfile, setIsSearch } from '../redux/reducers/misc.js';
 import { resetNotificationCount } from '../redux/reducers/chat.js';
@@ -69,13 +68,10 @@ const SideBar = ({ chatId }) => {
             margin: { xs:'none' , sm: '3px' },
             padding: { xs: 'none' , sm: '10px' },
             borderRadius: '20px',
-            // display: 'flex',
             display: { xs: chatId ? 'none' : 'flex', sm: 'flex' },
             flexDirection: { xs: 'row', sm: 'column' }, 
             alignItems: {xs: 'center', sm: 'space-between'},
-            // alignItems: {xs: 'center'},
             justifyContent: {xs: 'center', sm: 'space-around'},
-            // justifyContent: {xs: 'center'},
             position: { sm: 'sticky', xs: 'fixed' },
             left: { sm: 0, xs: 0},
             right: { sm: 'auto', xs: 'auto' },
