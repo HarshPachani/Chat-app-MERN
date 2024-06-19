@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import Title from '../shared/Title'
 import SideBar from './SideBar'
-import { Box, TextField, Typography } from '@mui/material'
+import { Box } from '@mui/material'
 import { gray } from '../constants/color'
 import ChatList from './ChatList'
 import { useNavigate, useParams } from 'react-router-dom';
@@ -10,7 +10,7 @@ import { useMyChatsQuery } from '../redux/api/api'
 import { useDispatch, useSelector } from 'react-redux'
 import { useSocket } from '../context/socket';
 import { useSocketEvents } from '../hooks/Hook'
-import { CHAT_JOINED, NEW_MESSAGE_ALERT, NEW_REQUEST, ONLINE_USERS, ONLINE_USER_DELETE, REFETCH_CHATS } from '../constants/events'
+import { CHAT_JOINED, NEW_MESSAGE_ALERT, NEW_REQUEST, ONLINE_USERS, ONLINE_USER_DELETE, ONLINE_USER_SET, REFETCH_CHATS } from '../constants/events'
 import { incrementNotification, setNewMessagesAlert, setNewMessageCount } from '../redux/reducers/chat.js'
 import { getOrSaveFromStorage } from '../lib/features'
 import { setIsDeleteMenu, setSelectedDeleteChat } from '../redux/reducers/misc.js'
@@ -32,20 +32,20 @@ const appLayout = () => (WrappedComponent) => {
         const chatId = params.id;
         const deleteMenuAnchor = useRef(null);
         
-        const { isLoading, data, isError, error, refetch } = useMyChatsQuery('');
+        const { data, refetch } = useMyChatsQuery('');
 
         useEffect(() => {
             getOrSaveFromStorage({ key: NEW_MESSAGE_ALERT, value: newMessageAlert });
             dispatch(setNewMessageCount())
-        }, [newMessageAlert]);
+        }, [newMessageAlert, dispatch]);
 
         useEffect(() => {
             refetch();
             socket.emit(CHAT_JOINED, { userId: user._id });
-          }, [user?.user]);      
+          }, [user?.user, refetch, socket, user._id]);      
 
         useEffect(() => {
-            socket.emit(ONLINE_USERS, {});
+            socket.emit(ONLINE_USER_SET, {userId: user?._id});
             return () => socket.emit(ONLINE_USER_DELETE, { userId: user._id });
         }, []);
 
@@ -58,7 +58,7 @@ const appLayout = () => (WrappedComponent) => {
         const newMessageAlertListener = useCallback((data) => {
             if(data.chatId === chatId) return;
             dispatch(setNewMessagesAlert(data));
-        }, [chatId]);
+        }, [chatId, dispatch]);
 
         const onlineUsersListener = useCallback((data) => {
             setOnlineUsers(data);
@@ -86,31 +86,29 @@ const appLayout = () => (WrappedComponent) => {
         <Box
                 sx={{
                     display: 'flex',
-                    // position: 'fixed',
                     position: {xs: 'relative', sm: 'fixed' },
                     flexDirection: { xs: 'column-reverse', sm: 'row'},
                     backgroundColor: gray,
-                    // overflow: 'none',
                     height: '100%',
                     width: '100%'
                 }}
-            >
-                <Title />
-                <SideBar chatId={chatId} />
-                <DeleteChatMenu dispatch={dispatch} deleteMenuAnchor={deleteMenuAnchor} />
-                <ChatList 
-                    chats={data?.chats} 
+        >
+            <Title />
+            <SideBar chatId={chatId} />
+            <DeleteChatMenu dispatch={dispatch} deleteMenuAnchor={deleteMenuAnchor} />
+            <ChatList 
+                chats={data?.chats} 
                     newMessagesAlert={newMessageAlert} 
                     onlineUsers={onlineUsers}
-                    user={user}
-                    />
-                <WrappedComponent 
-                    {...props}
+                user={user}
+                />
+            <WrappedComponent 
+                {...props}
                     chatId={chatId} 
                     user={user}
                     chats={sampleMessage} 
-                    handleDeleteChat={handleDeleteChat}
-                />
+                handleDeleteChat={handleDeleteChat}
+            />
         </Box>)
     }
 }
