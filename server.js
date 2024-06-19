@@ -47,8 +47,6 @@ app.use(cors(corsOptions));
 app.use('/api/v1/user', userRoute)
 app.use('/api/v1/chat', chatRoute)
 
-app.use(errorMiddleware);
-
 io.use((socket, next) => {
     cookieParser()(
         socket.request, 
@@ -133,6 +131,8 @@ io.on('connection', (socket) => {
         socket.broadcast.emit(ONLINE_USERS, Array.from(onlineUsers));
     });
 });
+
+app.use(errorMiddleware);
 
 server.listen(PORT, () => {
     console.log(`Server is listening on port: ${PORT}`);

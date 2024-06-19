@@ -33,7 +33,7 @@ const App = () => {
   }, [dispatch]);
 
   return loader ? (<LayoutLoader />) : (
-    <Router>
+    <Router basename='/Chat-app-MERN'>
       <Suspense fallback={<LayoutLoader />}>
         <Routes>
           <Route
