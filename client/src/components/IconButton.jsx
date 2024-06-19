@@ -1,10 +1,6 @@
 import React, { memo } from "react";
 import { Tooltip, IconButton, Badge, Avatar } from '@mui/material';
 
-// lightBlue: info
-// orange: warning
-// blue: primary
-
 const IconBtn = ({ title, icon, onClick, value, color='inherit', sx, src }) => {
   return (
       <Tooltip title={title} sx={sx}>

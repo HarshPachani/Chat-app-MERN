@@ -11,13 +11,11 @@ const MessageComponent = ({ message, user, groupChat }) => {
   const sameSender = sender?._id === user?._id;
 
   const { theme } = useSelector(store => store.chat);
-//   const timeAgo = moment(createdAt).fromNow();
   const timeAgo = moment(createdAt).format('h:mm A YYYY');
 
   return (
     // For Animation
     <>
-    {/* <div */}
     <motion.div
       initial = {{ opacity: 0, x: '-100%' }}
       whileInView={{ opacity: 1, x: 0 }}

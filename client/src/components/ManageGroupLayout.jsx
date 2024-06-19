@@ -65,8 +65,6 @@ const manageGroupLayout = () => (WrappedComponent) => {
           <WrappedComponent 
             {...props}
             myGroups={data?.groups}
-            // user={user}
-            // chats={} 
           />
         </Box>
       )
