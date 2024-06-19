@@ -352,7 +352,8 @@ const GroupsList = ({ w = "100%", myGroups = [], chatId }) => {
             backgroundColor: white,
             borderRadius: '15px',
             padding: '5px',
-            height: { xs: '80px', sm: '40px' },
+            // height: { xs: '80px', sm: '40px' },
+            height: 'auto',
           }}
           margin={'5px'}
         >
