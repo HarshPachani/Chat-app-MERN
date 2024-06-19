@@ -1,3 +1,3 @@
 export default [
-    'orange', 'blue', 'lightBlue', 'purple'
+    'orange', 'blue', 'lightBlue', 'green'
 ]

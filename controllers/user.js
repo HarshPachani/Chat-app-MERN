@@ -33,7 +33,12 @@ const newUser = TryCatch(async(req, res, next) => {
   // const adminId = '66614e998b7ac3a94c230bf3';
   const adminId = '6672920f9d81bfc109bc5a4e';
 
-  const adminUserChat = await Chat.create({ name: 'Admin', groupChat: false, members: [new mongoose.Types.ObjectId(adminId), user?._id] });
+  const adminUserChat = await Chat.create({ 
+    name: `Admin-${user?.name}`, 
+    groupChat: false, 
+    members: [new mongoose.Types.ObjectId(adminId), user?._id] 
+  });
+
   const adminMessage = [
     `Hello, ${name}`, 
     'Welcome to WeChat', 

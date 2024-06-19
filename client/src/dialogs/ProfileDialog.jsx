@@ -160,7 +160,7 @@ const ProfileDialog = () => {
             <ProfileCard heading={'Bio'} text={user?.bio} edit={true} editHandler={editHandler} />
             <ProfileCard heading={'Name'} text={user?.name} Icon={<FaceIcon />} edit={true} editHandler={editHandler} />
             <ProfileCard heading={'Joined'} text={moment(user?.createdAt).fromNow()} Icon={<CalendarIcon />} edit={false} />
-            <Typography variant='caption' color='gray' >Customise Themes:</Typography>
+            <Typography variant='caption' color='gray' marginBottom={0} >Customize Themes:</Typography>
             <Stack direction={'row'} spacing={'2rem'} alignItems={'center'}>
                 {themes.map((theme, i) => <ThemeCard theme={theme} clickHandler={themeChanger} key={i} />)}
             </Stack>
