@@ -2,10 +2,8 @@ import React, { Suspense, lazy, memo, useEffect, useRef, useState } from 'react'
 import { Backdrop, Stack } from '@mui/material'
 import ChatItem from '../shared/ChatItem'
 import { white } from '../constants/color'
-import ChatListLayout from './ChatListLayout'
 import { useParams } from 'react-router-dom'
-import { Box, Typography, TextField } from '@mui/material';
-import { useMyChatsQuery } from '../redux/api/api'
+import { Box, Typography } from '@mui/material';
 import { InputBox } from '../styles/StyledComponents'
 import IconBtn from './IconButton'
 import { AccountCircle as ProfileIcon } from '@mui/icons-material'
@@ -42,15 +40,9 @@ const ChatList = ({
     const { isProfile } = useSelector(store => store.misc);
     const { theme } = useSelector(store => store.chat);
 
-    useEffect(() => {
-        setUserChats(chats);
-    }, [chats]);
-
     const filterOptions = () => {
         switch (optionType) {
-            case 'all':
-                setUserChats(chats);
-                break;
+            
             case 'unread':
                 const unreadChats = chats?.filter(chat => newMessagesAlert.some(unreadChat => unreadChat.chatId === chat._id));
                 setUserChats(unreadChats);
@@ -59,8 +51,15 @@ const ChatList = ({
                 const groupChats = chats?.filter(chat => chat?.groupChat === true);
                 setUserChats(groupChats);
                 break;
+            default:
+                setUserChats(chats);
+                break
         }
     }
+
+    useEffect(() => {
+        setUserChats(chats);
+    }, [chats]);
 
     useEffect(() => {
         if(search.trim() === '') {
