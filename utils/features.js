@@ -68,7 +68,11 @@ const uploadFilesToCloudinary = async (files = []) => {
     }
 };
 
-const deleteFilesFromCloudinary = async(public_ids) => {};
+const deleteFilesFromCloudinary = async(public_id) => {
+    if(public_id) {
+        await cloudinary.uploader.destroy(public_id);
+    }
+};
 
 export {
     connectDb,
