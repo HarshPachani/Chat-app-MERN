@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { getOrSaveFromStorage } from "../../lib/features";
-import { blue, lightBlue, orange, purple } from "../../constants/color";
+import { blue, green, lightBlue, orange } from "../../constants/color";
 
 const getOrSetTheme = ({ value='' }) => {
     let theme = getOrSaveFromStorage({ key: 'THEME', get: true }) || 'orange';
@@ -13,8 +13,8 @@ const getOrSetTheme = ({ value='' }) => {
       case 'orange':
         color=orange
         break;
-      case 'purple':
-        color=purple
+      case 'green':
+        color=green
         break;
       case 'blue':
         color=blue
@@ -32,7 +32,6 @@ const getOrSetTheme = ({ value='' }) => {
 
 const countNewMessages = () => {
     const newMessages = getOrSaveFromStorage({ key: 'NEW_MESSAGE_ALERT', get: true }) || 0;
-    console.log(newMessages.length);
     return newMessages?.length-1;
 }
 
