@@ -23,7 +23,6 @@ const RenderAttachment = (file, url) => {
     default:
       return <FileOpenIcon />
   } 
-  // return <div>RenderAttachment</div>;
 };
 
 export default RenderAttachment;
