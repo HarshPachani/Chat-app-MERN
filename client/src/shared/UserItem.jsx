@@ -10,7 +10,6 @@ const UserItem = ({ user, handler, handlerIsLoading, isAdded=false, styling={} }
       <Stack 
           direction={'row'} 
           alignItems={'center'}
-          // spacing='1rem'
           width='100%'
           sx={{...styling}}
       >
