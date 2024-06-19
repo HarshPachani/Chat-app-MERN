@@ -18,8 +18,10 @@ const ChatHeader = ({ socket, chatMemberDetails, handleDeleteChat }) => {
         const isUserOnline = (data?.includes(chatMemberDetails?.chatAvatar[0]?._id));
         if(isUserOnline) {
             setIsOnline(true);
+        } else {
+            setIsOnline(false);
         }
-    });
+    }, []);
 
     const eventHandlers = {
         [ONLINE_USERS]: onlineUserListener,
@@ -81,8 +83,10 @@ const ChatHeader = ({ socket, chatMemberDetails, handleDeleteChat }) => {
                 : 
                 isOnline && (
                 <Typography sx={{
-                    color: 'gray',
                     fontSize: '0.85rem',
+                    color: 'green',
+                    opacity: isOnline ? 1 : 0,
+                    transition: 'opacity 1s ease-in',
                 }}>online</Typography>)
             }
         </Box>
