@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { Avatar, AvatarGroup, Stack, Box } from '@mui/material'
 
 const AvatarCard = ({ avatar=[], max=4 }) => {
@@ -17,7 +17,7 @@ const AvatarCard = ({ avatar=[], max=4 }) => {
             {avatar && avatar?.map((i, index) => (
                 <Avatar
                   key={Math.random()*100} 
-                  src={i} 
+                  src={i?.avatar ? i?.avatar?.url : i} 
                   alt={`Avatar ${index}`}
                   sx={{
                     width: '3rem',
@@ -35,4 +35,4 @@ const AvatarCard = ({ avatar=[], max=4 }) => {
   )
 }
 
-export default AvatarCard
+export default memo(AvatarCard)
