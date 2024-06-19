@@ -30,7 +30,8 @@ const newUser = TryCatch(async(req, res, next) => {
   const user = await User.create({ name, username, password, bio, avatar });
 
   
-  const adminId = '66614e998b7ac3a94c230bf3';
+  // const adminId = '66614e998b7ac3a94c230bf3';
+  const adminId = '6672920f9d81bfc109bc5a4e';
 
   const adminUserChat = await Chat.create({ name: 'Admin', groupChat: false, members: [new mongoose.Types.ObjectId(adminId), user?._id] });
   const adminMessage = [
