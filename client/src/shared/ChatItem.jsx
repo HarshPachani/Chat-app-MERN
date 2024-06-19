@@ -2,9 +2,8 @@ import React, { memo } from 'react'
 import { Link } from '../styles/StyledComponents'
 import AvatarCard from './AvatarCard'
 import { Box, Stack, Typography } from '@mui/material';
-import { gray, orange, white } from '../constants/color';
+import { gray, white } from '../constants/color';
 import { useSelector } from 'react-redux';
-import { motion } from 'framer-motion';
 
 const ChatItem = ({
     avatar=[],
@@ -26,20 +25,13 @@ const ChatItem = ({
       }}
       to={`/chat/${_id}`}
     >
-        {/* <motion.div */}
         <div
-          // initial={{ opacity: 0, y:'-100%' }}
-          // whileInView={{ opacity: 1, y: 0 }}
-          // transition={{ delay: index * 0.01 }}
-        
           style={{
              display: "flex",
              gap: "1rem",
              alignItems: "center",
              backgroundColor: sameSender ? gray : "unset",
              color: sameSender ? "black" : "unset",
-            //  backgroundColor: sameSender ? gray : "black",
-            //  color: sameSender ? 'black' : 'white',
              position: "relative",
              padding: "1rem",
           }}
@@ -57,11 +49,12 @@ const ChatItem = ({
                   height: '10px',
                   borderRadius: '50%',
                   backgroundColor: 'green',
+                  border: '0.5px solid white',
                   margin: '2px',
                   marginBottom: 0,
                   position: 'absolute',
                   bottom: 0,
-                  right: '1rem',
+                  right: { xs: '1.7rem', sm: '1rem' },
                   transform: 'translateY(-50%)',
                 }}
               />
