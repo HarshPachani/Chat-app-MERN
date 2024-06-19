@@ -10,7 +10,7 @@ import chatRoute from './routes/chat.js';
 import cors from 'cors';
 import corsOptions from './constants/config.js';
 import { socketAuthenticator } from './middlewares/auth.js';
-import { GROUP_USER_STOPPED_TYPING, GROUP_USER_TYPING, NEW_MESSAGE, NEW_MESSAGE_ALERT, ONLINE_USERS, ONLINE_USER_DELETE, START_TYPING, STOP_TYPING } from './constants/events.js';
+import { GROUP_USER_STOPPED_TYPING, GROUP_USER_TYPING, NEW_MESSAGE, NEW_MESSAGE_ALERT, ONLINE_USERS, ONLINE_USER_DELETE, START_TYPING, STOP_TYPING, ONLINE_USER_SET } from './constants/events.js';
 import { v4 as uuid } from 'uuid';
 import { getSockets } from './lib/helper.js';
 import { Message } from './models/message.js';
@@ -62,8 +62,6 @@ io.on('connection', (socket) => {
     userSocketIDs.set(user._id.toString(), socket.id);
     onlineUsers.add(user._id.toString());
 
-    // console.log('Available Clients: ', userSocketIDs);
-    
     socket.on(NEW_MESSAGE, async({ chatId, members, message }) => {
         const messageForRealTime = {
             _id: uuid(),
@@ -108,14 +106,18 @@ io.on('connection', (socket) => {
     });
 
     socket.on(ONLINE_USERS, () => {
-        socket.emit(ONLINE_USERS, Array.from(onlineUsers));
+        io.emit(ONLINE_USERS, Array.from(onlineUsers));
+    });
+
+    socket.on(ONLINE_USER_SET, ({ userId }) => {
+        onlineUsers.add(userId?.toString());
+        io.emit(ONLINE_USERS, Array.from(onlineUsers));
     });
 
     socket.on(ONLINE_USER_DELETE, ({ userId }) => {
         onlineUsers.delete(userId.toString());
         socket.broadcast.emit(ONLINE_USERS, Array.from(onlineUsers));
     });
-
     
     socket.on(GROUP_USER_TYPING, ({ userId, username, chatId }) => {
         socket.broadcast.emit(GROUP_USER_TYPING, { userId, username, chatId });
@@ -125,7 +127,6 @@ io.on('connection', (socket) => {
         socket.broadcast.emit(GROUP_USER_STOPPED_TYPING, 'Typing');
     })
     
-
     socket.on('disconnect', () => {
         userSocketIDs.delete(user._id.toString());
         onlineUsers.delete(user._id.toString());
@@ -137,4 +138,4 @@ server.listen(PORT, () => {
     console.log(`Server is listening on port: ${PORT}`);
 })
 
-export { userSocketIDs }
+export { userSocketIDs, onlineUsers }
