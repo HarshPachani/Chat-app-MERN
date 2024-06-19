@@ -1,8 +1,8 @@
-import React, { memo, useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import AppLayout from '../components/AppLayout'
-import { Avatar, Box, CircularProgress, IconButton, Stack, TextField, Tooltip, Typography } from '@mui/material'
-import { gray, orange, white } from '../constants/color'
-import { AttachFile as AttachFileIcon, KeyboardBackspace as KeyboardBackspaceIcon, Send as SendIcon } from '@mui/icons-material'
+import { Box, CircularProgress, IconButton, Stack } from '@mui/material'
+import { gray, white } from '../constants/color'
+import { AttachFile as AttachFileIcon, Send as SendIcon } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
 import MessageComponent from '../components/MessageComponent'
 import { InputBox } from '../styles/StyledComponents'
@@ -25,7 +25,6 @@ const Chat = ({ chatId, user, chats=[], handleDeleteChat }) => {
     const [groupUser, setGroupUser] = useState('');
 
     const bottomRef = useRef(null);
-    const containerRef = useRef(null);
     const typingTimeout = useRef(null);
     const chatListRef = useRef(null);
 
@@ -34,26 +33,19 @@ const Chat = ({ chatId, user, chats=[], handleDeleteChat }) => {
     const [iAmTyping, setIAmTyping] = useState(false);
     const [fileMenuAnchor, setFileMenuAnchor] = useState(null);
 
-    const [allMessages, setAllMessages] = useState([]);
-
     const socket = useSocket();
     const dispatch = useDispatch();
 
     const chatDetails = useGetChatDetailsQuery({ chatId, skip: !chatId });
     const members = chatDetails?.data?.chat?.members;
-    const { data, isLoading, isError } = useGetMessagesQuery({ chatId, page });
+    const { data, isLoading } = useGetMessagesQuery({ chatId, page });
     const { data: chatMemberDetails } = useGetOtherChatMemberQuery({ chatId });
 
     const { theme } = useSelector(store => store.chat);
 
     const errors = [
         { isError: chatDetails.isError, error: chatDetails.error },
-        // { isError: data.isError, error: data.error },
       ];
-
-    // const allMessages = [...oldMessagesChunk, ...messages];
-    // console.log(data ? true : false);
-    // const allMessages = [];
     
     useEffect(() => {
         socket.emit(CHAT_JOINED, { userId: user?._id, members })
@@ -70,10 +62,6 @@ const Chat = ({ chatId, user, chats=[], handleDeleteChat }) => {
     useEffect(() => {
         if(bottomRef.current && page===1) bottomRef.current.scrollIntoView({ behaviour: 'smooth' });
     }, [messages]);
-
-    // useEffect(() => {
-    //     if(containerRef.current) containerRef.current.scrollIntoView({ behaviour: 'smooth' });
-    // }, [allMessages]);
 
     useEffect(() => {
         if(data) {
@@ -126,10 +114,6 @@ const Chat = ({ chatId, user, chats=[], handleDeleteChat }) => {
     const handleFileOpen = (e) => {
         dispatch(setIsFileMenu(true));
         setFileMenuAnchor(e.currentTarget);
-    }
-
-    const navigateBack = () => {
-        navigate('/');
     }
 
     const submitHandler = (e) => {
@@ -202,7 +186,6 @@ const Chat = ({ chatId, user, chats=[], handleDeleteChat }) => {
             flexDirection: 'column',
             borderBottom: '1px solid black',
             width: { xs: '100%', sm: '70%'},
-            // height: '100%',
             height: '100vh',
         }}
     >
@@ -218,7 +201,6 @@ const Chat = ({ chatId, user, chats=[], handleDeleteChat }) => {
             spacing='1rem'
             padding='1rem'
             bgcolor={white}
-            // bgcolor={'black'}
             height={'100%'}
             sx={{
                 position: 'relative',
@@ -245,7 +227,6 @@ const Chat = ({ chatId, user, chats=[], handleDeleteChat }) => {
         <form
             style={{
                 position: 'sticky',
-                // top: 'auto',
                 bottom: 0,
                 marginTop: '10px'
             }}
