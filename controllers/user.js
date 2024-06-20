@@ -43,7 +43,7 @@ const newUser = TryCatch(async(req, res, next) => {
     `Hello, ${name}`, 
     'Welcome to WeChat', 
     'I would like to tell you that this app has various features', 
-    'One of the feature is Attachments, which means you can Send Image, Video or Audio of Maximum 2MB size',
+    'One of the feature is Attachments, which means you can Send Image, Video or Audio of Maximum size of 2MB',
     'But You can only send 3 Attachments with this account'
   ] 
   
@@ -257,6 +257,7 @@ const updateProfile = TryCatch(async(req, res, next) => {
   if(userProfile) {
     userProfile[`${field}`] = value;
     await userProfile.save();
+
     emitEvent(req, REFETCH_PROFILE, [req.user]);
     return res.status(201).json({
       success: true,
