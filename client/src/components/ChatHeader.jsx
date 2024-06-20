@@ -40,7 +40,8 @@ const ChatHeader = ({ socket, chatMemberDetails, handleDeleteChat }) => {
             borderRadius: '15px',
             padding: '5px',
             position: 'sticky',
-            top: 0
+            top: 'auto',
+            zIndex: 100,
         }}
         margin={'5px'}
     >

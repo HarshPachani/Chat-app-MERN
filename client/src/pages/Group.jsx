@@ -248,6 +248,7 @@ const Group = ({ myGroups }) => {
           alignItems: 'center',
           position: 'relative',
           padding: '1rem 3rem',
+          paddingTop: 0,
         }}
       >
         {IconBtns}
@@ -308,105 +309,104 @@ const Group = ({ myGroups }) => {
   )
 }
 
-const GroupsList = ({ w = "100%", myGroups = [], chatId }) => {
-  
+const GroupsList = memo(({ w = "100%", myGroups = [], chatId }) => {
   const [search, setSearch] = useState('');
   const [groupChatList, setGroupChatList] = useState(myGroups);
-  
+
   const { user } = useSelector(store => store.auth);
   const dispatch = useDispatch();
 
   useEffect(() => {
     setGroupChatList(myGroups);
-}, [myGroups])
+  }, [myGroups]);
 
   useEffect(() => {
-    if(search.trim() === '') {
-        setGroupChatList(myGroups);
-    }
-    
-    myGroups = myGroups?.filter(group => group?.name?.toLowerCase().includes(search?.toLowerCase().trim()));
+    if (search.trim() === '') {
       setGroupChatList(myGroups);
-    }, [search]);
-
-    const openProfile = () => dispatch(setIsProfile(true));
-
-    const handleSearchChange = (e) => {
-      setSearch(e.target.value);
+    } else {
+      const filteredGroups = myGroups.filter(group =>
+        group.name.toLowerCase().includes(search.toLowerCase().trim())
+      );
+      setGroupChatList(filteredGroups);
     }
+  }, [search, myGroups]);
 
-    return (
-      <Grid
-        item
+  const openProfile = () => dispatch(setIsProfile(true));
+
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+  };
+
+  return (
+    <Grid
+      item
+      sx={{
+        display: { xs: chatId ? 'none' : 'block', sm: 'block' },
+        marginBottom: '5px',
+        height: '100vh'
+      }}
+    >
+      <Box
         sx={{
-          display: { xs:  chatId ? 'none' : 'block', sm: 'block' },
-          marginBottom: '5px',
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          justifyContent: 'space-around',
+          alignItems: 'center',
+          backgroundColor: 'white',
+          borderRadius: '15px',
+          padding: '5px',
+          height: 'auto',
+          margin: '5px'
         }}
       >
         <Box
           sx={{
             display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
-            justifyContent: 'space-around',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
             alignItems: 'center',
-            backgroundColor: white,
-            borderRadius: '15px',
-            padding: '5px',
-            // height: { xs: '80px', sm: '40px' },
-            height: 'auto',
+            width: { xs: '100%', sm: 'auto' }
           }}
-          margin={'5px'}
         >
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              width: { xs: '100%', sm: 'auto' },
-            }}
-          >
-            <Typography variant='h5' sx={{ marginLeft: '5px' }}>Groups</Typography>
-            <IconBtn 
-              title={user?.username}
-              icon={<ProfileIcon />}
-              sx={{
-                display: { xs: 'flex', sm: 'none' }
-              }}
-              onClick={openProfile}
-            />
-          </Box>
-          <InputBox 
-            placeholder="Search Groups..."
-            value={search}
-            onChange={handleSearchChange}
+          <Typography variant='h5' sx={{ marginLeft: '5px' }}>Groups</Typography>
+          <IconBtn
+            title={user?.username}
+            icon={<ProfileIcon />}
+            sx={{ display: { xs: 'flex', sm: 'none' } }}
+            onClick={openProfile}
           />
         </Box>
-        <Stack
-          width={w}
-          direction="column"
-          sx={{ 
-            height: '100%', 
-            overflow: 'auto', 
-            backgroundColor: white, 
-            borderRadius: '20px',
-            marginRight: '5px',
-            border: `2px solid ${white}`,
-          }}
-        >
-          {groupChatList?.length > 0 ? (
-            groupChatList.map((group) => (
-              <GroupListItem key={group._id} group={group} chatId={chatId} />
-            ))
-          ) : (
-            <Typography textAlign="center" padding="1rem">
-              No groups
-            </Typography>
-          )}
-        </Stack>
-      </Grid>
-    );
-};
+        <InputBox
+          placeholder="Search Groups..."
+          value={search}
+          onChange={handleSearchChange}
+        />
+      </Box>
+      <Stack
+        width={w}
+        direction="column"
+        sx={{
+          height: '100%',
+          overflow: 'auto',
+          backgroundColor: 'white',
+          borderRadius: '20px',
+          marginRight: '5px',
+          border: `2px solid white`
+        }}
+      >
+        {groupChatList.length > 0 ? (
+          groupChatList.map((group) => (
+            <GroupListItem key={group._id} group={group} chatId={chatId} />
+          ))
+        ) : (
+          <Typography textAlign="center" padding="1rem">
+            No groups
+          </Typography>
+        )}
+      </Stack>
+    </Grid>
+  );
+})
 
 const GroupListItem = memo(({ group, chatId }) => {
   const { name, avatar, _id } = group;

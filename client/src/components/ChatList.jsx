@@ -33,7 +33,7 @@ const ChatList = ({
     const profileAnchor = useRef(null);
 
     const [search, setSearch] = useState('');
-    const [userChats, setUserChats] = useState([]);
+    const [userChats, setUserChats] = useState(chats);
     const [isOpen, setIsOpen] = useState(false);
     const [optionType, setOptionType] = useState('all');
 
@@ -42,7 +42,6 @@ const ChatList = ({
 
     const filterOptions = () => {
         switch (optionType) {
-            
             case 'unread':
                 const unreadChats = chats?.filter(chat => newMessagesAlert.some(unreadChat => unreadChat.chatId === chat._id));
                 setUserChats(unreadChats);
@@ -64,10 +63,10 @@ const ChatList = ({
     useEffect(() => {
         if(search.trim() === '') {
             filterOptions();
-            return;
+        } else {
+            const filteredChats  = userChats.filter(chat => chat.name.toLowerCase().includes(search.toLowerCase().trim()));
+            setUserChats(filteredChats);
         }
-        const filteredChats  = userChats.filter(chat => chat.name.toLowerCase().includes(search.toLowerCase().trim()));
-        setUserChats(filteredChats);
     }, [search]);
     
     useEffect(() => {
@@ -96,6 +95,7 @@ const ChatList = ({
             flexDirection: 'column',
             borderBottom: '1px solid black',
             width: { xs: '100%', sm: '30%' },
+            height: '100vh'
         }}
     >
         <MenuAnchor 

@@ -1,5 +1,5 @@
 import { Box, ListItemText, Menu, MenuItem, MenuList, Stack } from '@mui/material';
-import React, { useState } from 'react'
+import React, { memo, useState } from 'react'
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { userNotExists } from '../redux/reducers/auth';
@@ -59,4 +59,4 @@ const MenuAnchor = ({ isOpen, setIsOpen, dispatch, menuAnchor, openProfile }) =>
   )
 }
 
-export default MenuAnchor
+export default memo(MenuAnchor)

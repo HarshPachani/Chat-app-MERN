@@ -101,7 +101,7 @@ const appLayout = () => (WrappedComponent) => {
                     newMessagesAlert={newMessageAlert} 
                     onlineUsers={onlineUsers}
                 user={user}
-                />
+            />
             <WrappedComponent 
                 {...props}
                     chatId={chatId} 

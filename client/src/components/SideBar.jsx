@@ -1,5 +1,5 @@
 import { AppBar, Backdrop, Box, Typography } from '@mui/material'
-import React, { Suspense, lazy, useRef, useState } from 'react'
+import React, { Suspense, lazy, memo, useRef, useState } from 'react'
 import { purple } from '../constants/color.js';
 import {
   Search as SearchIcon,
@@ -186,4 +186,4 @@ const SideBar = ({ chatId }) => {
   )
 }
 
-export default SideBar
+export default memo(SideBar)

@@ -40,9 +40,10 @@ const ProfileDialog = () => {
     }
 
     const refetchProfileListener = useCallback(async() => {
+        console.log("Refetching profile...");
         try {
             const { data } = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/user/profile`, { withCredentials: true });
-            
+            console.log(data?.user);
             dispatch(userExists(data?.user));
         } catch (err) {
             console.log(err.message);
