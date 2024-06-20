@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/Chat-app-MERN/static/css/main.87d632a3.css",
-    "main.js": "/Chat-app-MERN/static/js/main.c81f47aa.js",
+    "main.js": "/Chat-app-MERN/static/js/main.5e2a029e.js",
     "static/js/264.033b901f.chunk.js": "/Chat-app-MERN/static/js/264.033b901f.chunk.js",
     "static/js/49.8d004f33.chunk.js": "/Chat-app-MERN/static/js/49.8d004f33.chunk.js",
-    "static/js/283.8b75aa31.chunk.js": "/Chat-app-MERN/static/js/283.8b75aa31.chunk.js",
-    "static/js/770.d3639f47.chunk.js": "/Chat-app-MERN/static/js/770.d3639f47.chunk.js",
+    "static/js/283.52c57de0.chunk.js": "/Chat-app-MERN/static/js/283.52c57de0.chunk.js",
+    "static/js/770.3b471644.chunk.js": "/Chat-app-MERN/static/js/770.3b471644.chunk.js",
     "static/js/453.258b012d.chunk.js": "/Chat-app-MERN/static/js/453.258b012d.chunk.js",
     "static/js/981.b196c9c8.chunk.js": "/Chat-app-MERN/static/js/981.b196c9c8.chunk.js",
     "static/js/621.6c778b75.chunk.js": "/Chat-app-MERN/static/js/621.6c778b75.chunk.js",
     "static/js/307.79e67865.chunk.js": "/Chat-app-MERN/static/js/307.79e67865.chunk.js",
-    "static/js/315.774162a5.chunk.js": "/Chat-app-MERN/static/js/315.774162a5.chunk.js",
+    "static/js/315.d9088084.chunk.js": "/Chat-app-MERN/static/js/315.d9088084.chunk.js",
     "static/js/861.7db7f69f.chunk.js": "/Chat-app-MERN/static/js/861.7db7f69f.chunk.js",
     "static/js/481.14e7f9dd.chunk.js": "/Chat-app-MERN/static/js/481.14e7f9dd.chunk.js",
     "static/js/122.41288d70.chunk.js": "/Chat-app-MERN/static/js/122.41288d70.chunk.js",
@@ -22,19 +22,19 @@
     "static/js/400.33d4f226.chunk.js": "/Chat-app-MERN/static/js/400.33d4f226.chunk.js",
     "static/js/267.81b7c496.chunk.js": "/Chat-app-MERN/static/js/267.81b7c496.chunk.js",
     "static/js/902.4b8ccd20.chunk.js": "/Chat-app-MERN/static/js/902.4b8ccd20.chunk.js",
-    "static/js/390.3aa48404.chunk.js": "/Chat-app-MERN/static/js/390.3aa48404.chunk.js",
+    "static/js/390.5fea5ee1.chunk.js": "/Chat-app-MERN/static/js/390.5fea5ee1.chunk.js",
     "index.html": "/Chat-app-MERN/index.html",
     "main.87d632a3.css.map": "/Chat-app-MERN/static/css/main.87d632a3.css.map",
-    "main.c81f47aa.js.map": "/Chat-app-MERN/static/js/main.c81f47aa.js.map",
+    "main.5e2a029e.js.map": "/Chat-app-MERN/static/js/main.5e2a029e.js.map",
     "264.033b901f.chunk.js.map": "/Chat-app-MERN/static/js/264.033b901f.chunk.js.map",
     "49.8d004f33.chunk.js.map": "/Chat-app-MERN/static/js/49.8d004f33.chunk.js.map",
-    "283.8b75aa31.chunk.js.map": "/Chat-app-MERN/static/js/283.8b75aa31.chunk.js.map",
-    "770.d3639f47.chunk.js.map": "/Chat-app-MERN/static/js/770.d3639f47.chunk.js.map",
+    "283.52c57de0.chunk.js.map": "/Chat-app-MERN/static/js/283.52c57de0.chunk.js.map",
+    "770.3b471644.chunk.js.map": "/Chat-app-MERN/static/js/770.3b471644.chunk.js.map",
     "453.258b012d.chunk.js.map": "/Chat-app-MERN/static/js/453.258b012d.chunk.js.map",
     "981.b196c9c8.chunk.js.map": "/Chat-app-MERN/static/js/981.b196c9c8.chunk.js.map",
     "621.6c778b75.chunk.js.map": "/Chat-app-MERN/static/js/621.6c778b75.chunk.js.map",
     "307.79e67865.chunk.js.map": "/Chat-app-MERN/static/js/307.79e67865.chunk.js.map",
-    "315.774162a5.chunk.js.map": "/Chat-app-MERN/static/js/315.774162a5.chunk.js.map",
+    "315.d9088084.chunk.js.map": "/Chat-app-MERN/static/js/315.d9088084.chunk.js.map",
     "861.7db7f69f.chunk.js.map": "/Chat-app-MERN/static/js/861.7db7f69f.chunk.js.map",
     "481.14e7f9dd.chunk.js.map": "/Chat-app-MERN/static/js/481.14e7f9dd.chunk.js.map",
     "122.41288d70.chunk.js.map": "/Chat-app-MERN/static/js/122.41288d70.chunk.js.map",
@@ -46,10 +46,10 @@
     "400.33d4f226.chunk.js.map": "/Chat-app-MERN/static/js/400.33d4f226.chunk.js.map",
     "267.81b7c496.chunk.js.map": "/Chat-app-MERN/static/js/267.81b7c496.chunk.js.map",
     "902.4b8ccd20.chunk.js.map": "/Chat-app-MERN/static/js/902.4b8ccd20.chunk.js.map",
-    "390.3aa48404.chunk.js.map": "/Chat-app-MERN/static/js/390.3aa48404.chunk.js.map"
+    "390.5fea5ee1.chunk.js.map": "/Chat-app-MERN/static/js/390.5fea5ee1.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.87d632a3.css",
-    "static/js/main.c81f47aa.js"
+    "static/js/main.5e2a029e.js"
   ]
 }
