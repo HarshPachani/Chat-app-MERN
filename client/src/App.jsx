@@ -31,6 +31,7 @@ const App = () => {
       }
     );
   }, [dispatch]);
+  console.log(process.env.REACT_APP_SERVER_URL);
 
   return loader ? (<LayoutLoader />) : (
     <Router basename='/Chat-app-MERN'>
