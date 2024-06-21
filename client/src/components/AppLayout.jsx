@@ -20,7 +20,7 @@ const appLayout = () => (WrappedComponent) => {
     return (props) => {
 
         const { user } = useSelector(store => store.auth);
-        const { newMessageAlert } = useSelector(store => store.chat);
+        const { newMessageAlert, newMessagesCount } = useSelector(store => store.chat);
 
         const [onlineUsers, setOnlineUsers] = useState([]);
         
@@ -32,7 +32,7 @@ const appLayout = () => (WrappedComponent) => {
         const chatId = params.id;
         const deleteMenuAnchor = useRef(null);
         
-        const { data, refetch } = useMyChatsQuery('');
+        const { data, isLoading, refetch } = useMyChatsQuery('');
 
         useEffect(() => {
             getOrSaveFromStorage({ key: NEW_MESSAGE_ALERT, value: newMessageAlert });
@@ -93,14 +93,15 @@ const appLayout = () => (WrappedComponent) => {
                     width: '100%'
                 }}
         >
-            <Title />
+            <Title newMessagesCount={newMessagesCount} />
             <SideBar chatId={chatId} />
             <DeleteChatMenu dispatch={dispatch} deleteMenuAnchor={deleteMenuAnchor} />
             <ChatList 
                 chats={data?.chats} 
-                    newMessagesAlert={newMessageAlert} 
-                    onlineUsers={onlineUsers}
+                newMessagesAlert={newMessageAlert} 
+                onlineUsers={onlineUsers}
                 user={user}
+                isLoading={isLoading}
             />
             <WrappedComponent 
                 {...props}
