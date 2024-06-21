@@ -1,5 +1,5 @@
 import { Avatar, Box, Tooltip, Typography, IconButton } from '@mui/material'
-import React, { memo, useCallback, useState } from 'react'
+import React, { memo, useCallback, useEffect, useState } from 'react'
 import { white } from '../constants/color'
 import { useNavigate, useParams } from 'react-router-dom'
 import { KeyboardBackspace as KeyboardBackspaceIcon } from '@mui/icons-material'
@@ -13,19 +13,27 @@ const ChatHeader = ({ socket, chatMemberDetails, handleDeleteChat }) => {
     const params = useParams();
     const id = params?.id;
     const [isOnline, setIsOnline] = useState(false);
+    const [onlineUserList, setOnlineUserList] = useState([]);
 
     const onlineUserListener = useCallback((data) => {
-        const isUserOnline = (data?.includes(chatMemberDetails?.chatAvatar[0]?._id));
-        if(isUserOnline) {
-            setIsOnline(true);
-        } else {
-            setIsOnline(false);
+        setOnlineUserList(data);
+    }, [chatMemberDetails]);
+
+    useEffect(() => {
+        if (chatMemberDetails) {
+            const userId = chatMemberDetails?.chatAvatar?.[0]?._id;
+            const isUserOnline = onlineUserList.includes(userId);
+            setIsOnline(isUserOnline);
         }
-    }, []);
+    }, [chatMemberDetails, onlineUserList]);
 
     const eventHandlers = {
         [ONLINE_USERS]: onlineUserListener,
     }
+
+    useEffect(() => {
+        socket.emit(ONLINE_USERS, {});
+    }, []);
 
     useSocketEvents(socket, eventHandlers);
 
