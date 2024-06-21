@@ -63,11 +63,13 @@ const SideBar = ({ chatId }) => {
       <AppBar
           sx={{
             bgcolor: purple,
-            height: { xs: '40px', sm: '100vh' },
+            // height: { xs: '40px', sm: '100vh' },
+            height: { xs: 'auto', sm: '100vh' },
             width: { xs: '100vw', sm: '80px' },
             margin: { xs:'none' , sm: '3px' },
             padding: { xs: 'none' , sm: '10px' },
-            borderRadius: '20px',
+            // borderRadius: '20px',
+            borderRadius: { xs: '10px 10px 0px 0px', sm: '20px' },
             display: { xs: chatId ? 'none' : 'flex', sm: 'flex' },
             flexDirection: { xs: 'row', sm: 'column' }, 
             alignItems: {xs: 'center', sm: 'space-between'},
@@ -76,7 +78,7 @@ const SideBar = ({ chatId }) => {
             left: { sm: 0, xs: 0},
             right: { sm: 'auto', xs: 'auto' },
             bottom: { sm: 'auto', xs: 0 },
-            top: { sm: 0, xs: 'auto' }
+            top: { sm: 0, xs: 'auto' },
           }}
         >
           <MenuAnchor 
@@ -87,50 +89,53 @@ const SideBar = ({ chatId }) => {
             openProfile={openProfile}
           />
           <Typography
-            variant="h6"
+            variant='h6'
             sx={{
-              display: { xs: "none", sm: "block" },
+              display: { xs: 'none', sm: 'block' },
             }}
           >
             <ForumIcon />
           </Typography>
-            
-          {/* <Toolbar> */}
-            <Box>
-              <IconBtn
-                title="Chats"
-                icon={<ChatIcon />}
-                onClick={navigateToChat}
-                color={(location.pathname.includes('/chat') || location.pathname === '/') && (!isSearch && !isNotification && !isNewGroup && !isProfile) ? theme : 'inherit'}
-                value={newMessagesCount}
+
+          <Box>
+            <IconBtn
+              title="Chats"
+              icon={<ChatIcon />}
+              onClick={navigateToChat}
+              color={(location.pathname.includes('/chat') || location.pathname === '/') && (!isSearch && !isNotification && !isNewGroup && !isProfile) ? theme : 'inherit'}
+              value={newMessagesCount}
+              // name={'Chats'}
               />
-              <IconBtn
-                title="Search"
-                icon={<SearchIcon />}
-                color={isSearch ? theme : 'inherit'}
-                onClick={openSearchDialog}
+            <IconBtn
+              title="Search"
+              icon={<SearchIcon />}
+              color={isSearch ? theme : 'inherit'}
+              onClick={openSearchDialog}
+              // name={'Search'}
               />
-              <IconBtn
-                title="New Group"
-                icon={<AddIcon />}
-                color={isNewGroup ? theme : 'inherit'}
-                onClick={openNewGroup}
-              />
-              <IconBtn
-                title="Manage Groups"
-                icon={<GroupIcon />}
-                color={location.pathname.includes('/groups') ? theme : 'inherit'}
-                onClick={navigateToGroup}
-              />
-              <IconBtn
-                title="Notifications"
-                icon={<NotificationsIcon />}
-                color={isNotification ? theme : 'inherit'}
-                value={notificationCount}
-                onClick={openNotification}
-              />
-            </Box>
-          {/* </Toolbar> */}
+            <IconBtn
+              title="New Group"
+              icon={<AddIcon />}
+              color={isNewGroup ? theme : 'inherit'}
+              onClick={openNewGroup}
+              // name={'New Group'}
+            />
+            <IconBtn
+              title="Manage Groups"
+              icon={<GroupIcon />}
+              color={location.pathname.includes('/groups') ? theme : 'inherit'}
+              onClick={navigateToGroup}
+              // name={'Manage Groups'}
+            />
+            <IconBtn
+              title="Notifications"
+              icon={<NotificationsIcon />}
+              color={isNotification ? theme : 'inherit'}
+              value={notificationCount}
+              onClick={openNotification}
+              // name={'Notifications'}
+            />
+          </Box>
           {
             user?.avatar?.url ? 
             <IconBtn 
