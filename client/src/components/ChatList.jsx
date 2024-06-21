@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, memo, useEffect, useRef, useState } from 'react'
-import { Backdrop, Stack } from '@mui/material'
+import { Backdrop, CircularProgress, Stack } from '@mui/material'
 import ChatItem from '../shared/ChatItem'
 import { white } from '../constants/color'
 import { useParams } from 'react-router-dom'
@@ -15,7 +15,6 @@ import OptionChip from './OptionChip.jsx'
 const ProfileDialog = lazy(() => import('../dialogs/ProfileDialog.jsx'));
 
 const ChatList = ({
-    w = '30%',
     chats = [],
     newMessagesAlert = [
         {
@@ -25,6 +24,7 @@ const ChatList = ({
     ],
     user,
     onlineUsers = [],
+    isLoading,
 }) => {
     const dispatch = useDispatch();
     const params = useParams();
@@ -46,7 +46,7 @@ const ChatList = ({
                 const unreadChats = chats?.filter(chat => newMessagesAlert.some(unreadChat => unreadChat.chatId === chat._id));
                 setUserChats(unreadChats);
                 break;
-            case 'group':
+            case 'groups':
                 const groupChats = chats?.filter(chat => chat?.groupChat === true);
                 setUserChats(groupChats);
                 break;
@@ -117,7 +117,7 @@ const ChatList = ({
                 padding: '5px',
                 position: 'sticky',
                 top: 0,
-                height: 'auto'
+                height: { xs: '20%', sm: '15%', md: 'auto' }
             }}
             margin={'5px'}
         >
@@ -161,28 +161,35 @@ const ChatList = ({
             />
         </Box>
 
-        <Stack 
-            // width={w} 
-            direction={'column'}
-            sx={{ 
-                height: '100%', 
-                overflow: 'auto', 
-                backgroundColor: white, 
-                // backgroundColor: 'black', 
-                // color: 'white',
-                borderRadius: '20px',
-                marginRight: '5px',
-                border: `2px solid ${white}`,
-                position: 'sticky',
-                top: 0
-            }}
-        >
+        {
+            isLoading ? 
+            <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+            }}>
+                <CircularProgress sx={{ color: theme }} />
+            </Box>
+            :
+            <Stack 
+                direction={'column'}
+                sx={{ 
+                    height: '100%', 
+                    overflow: 'auto', 
+                    backgroundColor: white, 
+                    borderRadius: '20px',
+                    marginRight: '5px',
+                    border: `2px solid ${white}`,
+                    position: 'sticky',
+                    top: 0
+                }}
+            >
             <OptionChip
                 optionType={optionType}
                 setOptionType={setOptionType}
             />
             
-            { userChats?.length > 0 ? (
+            { !isLoading && userChats?.length > 0 ? (
                 userChats?.map((data, index) => {
                     const { avatar, _id, name, groupChat, members } = data;
                 const newMessageAlert = newMessagesAlert.find(({ chatId }) => chatId === _id )
@@ -208,7 +215,8 @@ const ChatList = ({
                     </Typography>
                 )
             }
-        </Stack>
+            </Stack>
+        }
     </Box>
     {
         isProfile && (
