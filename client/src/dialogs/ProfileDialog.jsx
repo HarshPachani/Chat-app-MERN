@@ -40,10 +40,8 @@ const ProfileDialog = () => {
     }
 
     const refetchProfileListener = useCallback(async() => {
-        console.log("Refetching profile...");
         try {
             const { data } = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/user/profile`, { withCredentials: true });
-            console.log(data?.user);
             dispatch(userExists(data?.user));
         } catch (err) {
             console.log(err.message);
@@ -99,8 +97,8 @@ const ProfileDialog = () => {
 
   return (
     <Dialog open={isProfile} onClose={() => dispatch(setIsProfile(false))} fullWidth={true}>
-        <Stack spacing={'2rem'} direction='column' alignItems='center' sx={{ margin: '15px' }}>
-             <form
+        <Stack spacing={'2rem'} direction='column' alignItems='center' justifyContent={'center'} sx={{ margin: '15px' }}>
+            <form
                 style={{
                   width: '100%',
                   marginTop: '1rem',
@@ -157,14 +155,21 @@ const ProfileDialog = () => {
                   </Typography>
                 )}
             </form>
-            <ProfileCard heading={'Username'} text={user?.username} Icon={<UserNameIcon />} edit={true} editHandler={editHandler} />
-            <ProfileCard heading={'Bio'} text={user?.bio} edit={true} editHandler={editHandler} />
-            <ProfileCard heading={'Name'} text={user?.name} Icon={<FaceIcon />} edit={true} editHandler={editHandler} />
-            <ProfileCard heading={'Joined'} text={moment(user?.createdAt).fromNow()} Icon={<CalendarIcon />} edit={false} />
-            <Typography variant='caption' color='gray' marginBottom={0} >Customize Themes:</Typography>
-            <Stack direction={'row'} spacing={'2rem'} alignItems={'center'}>
-                {themes.map((theme, i) => <ThemeCard theme={theme} clickHandler={themeChanger} key={i} />)}
-            </Stack>
+            <Box sx={{ 
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}>
+                <ProfileCard heading={'Username'} text={user?.username} edit={true} editHandler={editHandler} />
+                <ProfileCard heading={'Bio'} text={user?.bio} edit={true} editHandler={editHandler} />
+                <ProfileCard heading={'Name'} text={user?.name} edit={true} editHandler={editHandler} />
+                <ProfileCard heading={'Joined'} text={moment(user?.createdAt).fromNow()} edit={false} />
+                <Typography variant='caption' color='gray' marginBottom={0} marginTop='2rem'>Customize Themes:</Typography>
+                <Stack direction={'row'} spacing={'2rem'} alignItems={'center'} >
+                    {themes.map((theme, i) => <ThemeCard theme={theme} clickHandler={themeChanger} key={i} />)}
+                </Stack>
+            </Box>
         </Stack>
     </Dialog>
   )
@@ -195,8 +200,7 @@ const ProfileCard = ({ text, Icon, heading, edit, editHandler }) => {
         setIsEdit(false);
     }
     return (
-    <Stack direction='row' alignItems='center' spacing='1rem' color='white' textAlign='center'>
-        { Icon && Icon }
+    <Stack direction='row' alignItems='center' justifyContent='center' spacing='1rem' color='white' textAlign='center'>
         <Stack>
             <Typography variant='caption' color='gray' >{heading}</Typography>
             {
@@ -207,7 +211,8 @@ const ProfileCard = ({ text, Icon, heading, edit, editHandler }) => {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'space-between'
-                    }}>
+                        }}
+                    >
                         <TextField 
                             value={editValue}
                             onChange={(e) => setEditValue(e.target.value)}
@@ -221,11 +226,13 @@ const ProfileCard = ({ text, Icon, heading, edit, editHandler }) => {
                     </>
                 ) : (
                     <>
-                    <Box sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between'
-                    }}>
+                    <Box 
+                    sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between'
+                        }}
+                    >
                         <Typography variant='body1' color='black' >{editValue}</Typography>
                         { edit && (
                             <IconButton
