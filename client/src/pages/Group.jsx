@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, memo, useCallback, useEffect, useState } from 'react'
+import React, { Suspense, lazy, memo, useCallback, useEffect, useRef, useState } from 'react'
 import ManageGroupLayout from '../components/ManageGroupLayout';
 import { Backdrop, Box, Button, CircularProgress, Grid, IconButton, Menu as MenuIcon, Stack, TextField, Tooltip, Typography } from '@mui/material';
 import { gray, orange, white } from '../constants/color';
@@ -14,6 +14,7 @@ import { REFETCH_CHATS, REFETCH_GROUP_CHAT_MEMBERS } from '../constants/events';
 import IconBtn from '../components/IconButton'
 import { InputBox, Link } from '../styles/StyledComponents';
 import AvatarCard from '../shared/AvatarCard';
+import MenuAnchor from '../dialogs/MenuAnchor';
 
 const ConfirmDeleteDialog = lazy(() => import('../dialogs/ConfirmDeleteDialog'));
 const AddMemberDialog = lazy(() => import('../dialogs/AddMemberDialog'));
@@ -35,7 +36,6 @@ const Group = ({ myGroups }) => {
 
 
   const refetchListener = useCallback((data) => {
-    console.log("Refetching...");
     refetch();
   }, [refetch]);
 
@@ -78,10 +78,10 @@ const Group = ({ myGroups }) => {
     }
 
     return () => {
-      setGroupName("");
-      setGroupNameUpdatedValue("");
+      setGroupName('');
+      setGroupNameUpdatedValue('');
       setMembers([]);
-      setIsEdit("");
+      setIsEdit(false);
     };
   }, [data]);
 
@@ -130,9 +130,7 @@ const Group = ({ myGroups }) => {
 
   const removeMemberHandler = (userId) => {
     removeMember('Removing member...', { chatId, userId});
-  };
-
-  
+  }; 
 
   const IconBtns = (
     <>
@@ -312,9 +310,14 @@ const Group = ({ myGroups }) => {
 const GroupsList = memo(({ w = "100%", myGroups = [], chatId }) => {
   const [search, setSearch] = useState('');
   const [groupChatList, setGroupChatList] = useState(myGroups);
+  const [isOpen, setIsOpen] = useState(false);
 
   const { user } = useSelector(store => store.auth);
+  const { isProfile } = useSelector(store => store.misc);
+  const { theme } = useSelector(store => store.chat);
   const dispatch = useDispatch();
+
+  const profileAnchor = useRef(null);
 
   useEffect(() => {
     setGroupChatList(myGroups);
@@ -331,7 +334,16 @@ const GroupsList = memo(({ w = "100%", myGroups = [], chatId }) => {
     }
   }, [search, myGroups]);
 
-  const openProfile = () => dispatch(setIsProfile(true));
+  const handleMenuOpen = (e) => {
+    setIsOpen(true);
+    profileAnchor.current = e.currentTarget;
+  }
+
+  
+  const openProfile = () => {
+    setIsOpen(false);
+    dispatch(setIsProfile(true));
+  }
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
@@ -346,6 +358,14 @@ const GroupsList = memo(({ w = "100%", myGroups = [], chatId }) => {
         height: '100vh'
       }}
     >
+      <MenuAnchor 
+            isOpen={isOpen} 
+            setIsOpen={setIsOpen} 
+            dispatch={dispatch} 
+            menuAnchor={profileAnchor} 
+            openProfile={openProfile}
+      />
+
       <Box
         sx={{
           display: 'flex',
@@ -369,12 +389,28 @@ const GroupsList = memo(({ w = "100%", myGroups = [], chatId }) => {
           }}
         >
           <Typography variant='h5' sx={{ marginLeft: '5px' }}>Groups</Typography>
-          <IconBtn
-            title={user?.username}
-            icon={<ProfileIcon />}
-            sx={{ display: { xs: 'flex', sm: 'none' } }}
-            onClick={openProfile}
-          />
+           {
+            user?.avatar?.url ? 
+            <IconBtn 
+                title={user?.username}
+                src={user.avatar.url}
+                color={isProfile ? theme : 'inherit'}
+                sx={{
+                    display: { xs: 'flex', sm: 'none' }
+                }}
+                onClick={handleMenuOpen}
+            />
+            : 
+            <IconBtn 
+                title={user?.username}
+                icon={<ProfileIcon />}
+                color={isProfile ? theme : 'inherit'}
+                sx={{
+                    display: { xs: 'flex', sm: 'none' }
+                }}
+                onClick={handleMenuOpen}
+            />
+          }
         </Box>
         <InputBox
           placeholder="Search Groups..."
