@@ -29,14 +29,14 @@ const OptionChip = ({ optionType, setOptionType }) => {
           }}
           />
         <Chip
-          label="Group"
-          variant={optionType==='group' ? 'filled' : 'outlined'}
+          label="Groups"
+          variant={optionType==='groups' ? 'filled' : 'outlined'}
           clickable
-          onClick={() => setOptionType('group')}
+          onClick={() => setOptionType('groups')}
           sx={{
-            bgcolor: optionType === 'group' ? theme : 'transparent',
-            color: optionType === 'group' ? '#ffffff' : theme,
-            borderColor: optionType !== 'group' && theme,
+            bgcolor: optionType === 'groups' ? theme : 'transparent',
+            color: optionType === 'groups' ? '#ffffff' : theme,
+            borderColor: optionType !== 'groups' && theme,
           }}
         />
     </Box>
