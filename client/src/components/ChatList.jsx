@@ -109,7 +109,7 @@ const ChatList = ({
         <Box
             sx={{
                 display: 'flex',
-                flexDirection: { xs: 'column', md: 'row' },
+                flexDirection: 'column',
                 justifyContent: 'space-around',
                 alignItems: 'center',
                 backgroundColor: white,
@@ -117,7 +117,7 @@ const ChatList = ({
                 padding: '5px',
                 position: 'sticky',
                 top: 0,
-                height: { xs: '20%', sm: '15%', md: 'auto' }
+                height: { xs: '18%', sm: '14%' }
             }}
             margin={'5px'}
         >

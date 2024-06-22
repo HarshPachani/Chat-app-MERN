@@ -21,8 +21,8 @@ const Login = () => {
 
   const [name, setName] = useState('');
   const [bio, setBio] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('Guest');
+  const [password, setPassword] = useState('GuestPass');
 
   const avatar = useFileHandler("single", 2);
 

@@ -27,6 +27,7 @@ const Chat = ({ chatId, user, chats=[], handleDeleteChat }) => {
     const bottomRef = useRef(null);
     const typingTimeout = useRef(null);
     const chatListRef = useRef(null);
+    const inputRef = useRef(null);
 
     const [messages, setMessages] = useState([]);
     const [userTyping, setUserTyping] = useState('');
@@ -122,6 +123,7 @@ const Chat = ({ chatId, user, chats=[], handleDeleteChat }) => {
 
         socket.emit(NEW_MESSAGE, { chatId, members, message });
         setMessage('');
+        inputRef.current.focus();
     }
 
     const newMessagesListener = useCallback((data) => {
@@ -190,11 +192,6 @@ const Chat = ({ chatId, user, chats=[], handleDeleteChat }) => {
         }}
     >
         <ChatHeader socket={socket} chatMemberDetails={chatMemberDetails} handleDeleteChat={handleDeleteChat} />
-        {isLoading && 
-            <Box alignItems={'center'}>
-                <CircularProgress />
-            </Box>
-        }
         <Stack
             ref={chatListRef}
             boxSizing='border-box'
@@ -210,19 +207,29 @@ const Chat = ({ chatId, user, chats=[], handleDeleteChat }) => {
             }}
         >
             {/* Render Messages */}
-            {messages?.map((i) => (
-            <MessageComponent key={i._id} message={i} user={user} groupChat={chatMemberDetails?.isGroupChat} />
-            ))}
+            {isLoading ?
+                <Box sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}>
+                    <CircularProgress sx={{ color: theme }} />
+                </Box>
+                :
+                <>
+                    {messages?.map((i) => (
+                    <MessageComponent key={i._id} message={i} user={user} groupChat={chatMemberDetails?.isGroupChat} />
+                    ))}
 
-            {
-                userTyping && !chatMemberDetails?.isGroupChat && <TypingLoader />
-            }
-            
-            {
-                chatMemberDetails?.isGroupChat && groupUser && <div style={{ color: 'green' }}>{groupUser} is typing...</div>
-            }
+                    {userTyping && !chatMemberDetails?.isGroupChat && <TypingLoader />}
+                    
+                    {
+                        chatMemberDetails?.isGroupChat && groupUser && <div style={{ color: 'green' }}>{groupUser} is typing...</div>
+                    }
 
-            <div ref={bottomRef}/>
+                    <div ref={bottomRef}/>
+                </>
+            }
         </Stack>
         <form
             style={{
@@ -256,6 +263,7 @@ const Chat = ({ chatId, user, chats=[], handleDeleteChat }) => {
                 </IconButton>
 
                 <InputBox 
+                    ref={inputRef}
                     placeholder='Type Message Here...'
                     value={message}
                     onChange={handleMessageChange}

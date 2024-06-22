@@ -68,7 +68,6 @@ const SideBar = ({ chatId }) => {
             width: { xs: '100vw', sm: '80px' },
             margin: { xs:'none' , sm: '3px' },
             padding: { xs: 'none' , sm: '10px' },
-            // borderRadius: '20px',
             borderRadius: { xs: '10px 10px 0px 0px', sm: '20px' },
             display: { xs: chatId ? 'none' : 'flex', sm: 'flex' },
             flexDirection: { xs: 'row', sm: 'column' }, 
@@ -97,43 +96,53 @@ const SideBar = ({ chatId }) => {
             <ForumIcon />
           </Typography>
 
-          <Box>
+          <Box sx={{
+            display: 'flex',
+            flexDirection: { xs: 'row', sm: 'column' },
+            flexWrap: 'nowrap',
+            overflowX: 'auto'
+          }}>
             <IconBtn
               title="Chats"
               icon={<ChatIcon />}
               onClick={navigateToChat}
               color={(location.pathname.includes('/chat') || location.pathname === '/') && (!isSearch && !isNotification && !isNewGroup && !isProfile) ? theme : 'inherit'}
               value={newMessagesCount}
-              // name={'Chats'}
+              name={'Chats'}
+              sx={{flexShrink: 0, marginRight: '2px'}}
               />
             <IconBtn
               title="Search"
               icon={<SearchIcon />}
               color={isSearch ? theme : 'inherit'}
               onClick={openSearchDialog}
-              // name={'Search'}
+              name={'Search'}
+              sx={{flexShrink: 0, marginRight: '2px'}}
               />
             <IconBtn
               title="New Group"
               icon={<AddIcon />}
               color={isNewGroup ? theme : 'inherit'}
               onClick={openNewGroup}
-              // name={'New Group'}
-            />
+              name={'New Group'}
+              sx={{flexShrink: 0, marginRight: '2px'}}
+              />
             <IconBtn
               title="Manage Groups"
               icon={<GroupIcon />}
               color={location.pathname.includes('/groups') ? theme : 'inherit'}
               onClick={navigateToGroup}
-              // name={'Manage Groups'}
-            />
+              name={'Manage Groups'}
+              sx={{flexShrink: 0, marginRight: '2px'}}
+              />
             <IconBtn
               title="Notifications"
               icon={<NotificationsIcon />}
               color={isNotification ? theme : 'inherit'}
               value={notificationCount}
               onClick={openNotification}
-              // name={'Notifications'}
+              name={'Notifications'}
+              sx={{flexShrink: 0, marginRight: '2px'}}
             />
           </Box>
           {

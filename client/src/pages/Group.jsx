@@ -369,14 +369,14 @@ const GroupsList = memo(({ w = "100%", myGroups = [], chatId }) => {
       <Box
         sx={{
           display: 'flex',
-          flexDirection: { xs: 'column', md: 'row' },
+          flexDirection: 'column',
           justifyContent: 'space-around',
           alignItems: 'center',
-          backgroundColor: 'white',
+          backgroundColor: white,
           borderRadius: '15px',
           padding: '5px',
-          height: 'auto',
-          margin: '5px'
+          margin: '5px',
+          height: { xs: '15%', sm: '12%' }
         }}
       >
         <Box
@@ -424,7 +424,7 @@ const GroupsList = memo(({ w = "100%", myGroups = [], chatId }) => {
         sx={{
           height: '100%',
           overflow: 'auto',
-          backgroundColor: 'white',
+          backgroundColor: white,
           borderRadius: '20px',
           marginRight: '5px',
           border: `2px solid white`
