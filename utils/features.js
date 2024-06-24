@@ -16,9 +16,11 @@ const connectDb = () => {
 
 const cookieOptions = {
     maxAge: 15 * 24 * 60 * 60 * 1000,
-    sameSite: "none",
+    sameSite: "None",
     httpOnly: true,
     secure: true,
+    domain: process.env.CLIENT_URL,
+    path: '/',
 };
 
 const emitEvent = (req, event, users, data) => {
@@ -36,7 +38,7 @@ const sendToken = (res, user, code, message) => {
                 success: true,
                 user,
                 message,
-            })
+            });
 }
 
 const uploadFilesToCloudinary = async (files = []) => {
