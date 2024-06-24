@@ -21,6 +21,7 @@ const manageGroupLayout = () => (WrappedComponent) => {
     const { data , refetch } = useMyGroupsQuery('');
 
     const { newMessageAlert } = useSelector(store => store.chat);
+    const { user } = useSelector(store => store.auth); 
     
     const refetchListener = useCallback((data) => {
       refetch();
@@ -48,6 +49,10 @@ const manageGroupLayout = () => (WrappedComponent) => {
       getOrSaveFromStorage({ key: NEW_MESSAGE_ALERT, value: newMessageAlert });
       dispatch(setNewMessageCount())
     }, [newMessageAlert, dispatch]);
+
+    useEffect(() => {
+      refetch();
+    }, [user?.user, refetch]);
 
     return (
       <Box           

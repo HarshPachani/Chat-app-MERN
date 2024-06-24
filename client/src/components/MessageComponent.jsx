@@ -11,7 +11,7 @@ const MessageComponent = ({ message, user, groupChat }) => {
   const sameSender = sender?._id === user?._id;
 
   const { theme } = useSelector(store => store.chat);
-  const timeAgo = moment(createdAt).format('h:mm A YYYY');
+  const timeAgo = moment(createdAt).format('DD-MM-YYYY hh:mm A');
 
   return (
     // For Animation

@@ -105,9 +105,8 @@ const appLayout = () => (WrappedComponent) => {
             />
             <WrappedComponent 
                 {...props}
-                    chatId={chatId} 
-                    user={user}
-                    chats={sampleMessage} 
+                chatId={chatId} 
+                user={user}
                 handleDeleteChat={handleDeleteChat}
             />
         </Box>)

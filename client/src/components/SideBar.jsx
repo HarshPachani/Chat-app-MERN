@@ -130,7 +130,7 @@ const SideBar = ({ chatId }) => {
             <IconBtn
               title="Manage Groups"
               icon={<GroupIcon />}
-              color={location.pathname.includes('/groups') ? theme : 'inherit'}
+              color={(location.pathname.includes('/groups')) && (!isSearch && !isNotification && !isNewGroup && !isProfile) ? theme : 'inherit'}
               onClick={navigateToGroup}
               name={'Manage Groups'}
               sx={{flexShrink: 0, marginRight: '2px'}}
