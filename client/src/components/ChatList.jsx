@@ -44,15 +44,15 @@ const ChatList = ({
         switch (optionType) {
             case 'unread':
                 const unreadChats = chats?.filter(chat => newMessagesAlert.some(unreadChat => unreadChat.chatId === chat._id));
-                setUserChats(unreadChats);
+                return unreadChats;
                 break;
             case 'groups':
                 const groupChats = chats?.filter(chat => chat?.groupChat === true);
-                setUserChats(groupChats);
+                return groupChats;
                 break;
             default:
-                setUserChats(chats);
-                break
+                return chats;
+                break;
         }
     }
 
@@ -62,15 +62,15 @@ const ChatList = ({
 
     useEffect(() => {
         if(search.trim() === '') {
-            filterOptions();
+            setUserChats(filterOptions());
         } else {
-            const filteredChats  = userChats.filter(chat => chat.name.toLowerCase().includes(search.toLowerCase().trim()));
+            const filteredChats  = filterOptions().filter(chat => chat.name.toLowerCase().includes(search.toLowerCase().trim()));
             setUserChats(filteredChats);
         }
     }, [search]);
     
     useEffect(() => {
-        filterOptions();
+        setUserChats(filterOptions());
     }, [optionType]);
 
     const handleSearchChange = (e) => {
@@ -117,7 +117,7 @@ const ChatList = ({
                 padding: '5px',
                 position: 'sticky',
                 top: 0,
-                height: { xs: '18%', sm: '14%' }
+                height: { xs: '18%', sm: '13%' }
             }}
             margin={'5px'}
         >
