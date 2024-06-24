@@ -19,8 +19,6 @@ const cookieOptions = {
     sameSite: "None",
     httpOnly: true,
     secure: true,
-    domain: process.env.CLIENT_URL,
-    path: '/',
 };
 
 const emitEvent = (req, event, users, data) => {
