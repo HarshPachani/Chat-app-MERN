@@ -17,30 +17,37 @@ import ChatHeader from '../components/ChatHeader'
 import { setIsFileMenu } from '../redux/reducers/misc'
 import FileMenu from '../dialogs/FileMenu'
 
-const Chat = ({ chatId, user, chats=[], handleDeleteChat }) => {
-    const navigate = useNavigate();
+const Chat = ({ chatId, user, handleDeleteChat }) => {
     const [message, setMessage] = useState('');
     const [page, setPage] = useState(1);
+    const [newMessagesCount, setNewMessagesCount] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
     const [groupUser, setGroupUser] = useState('');
-
-    const bottomRef = useRef(null);
-    const typingTimeout = useRef(null);
-    const chatListRef = useRef(null);
-    const inputRef = useRef(null);
-
     const [messages, setMessages] = useState([]);
     const [userTyping, setUserTyping] = useState('');
     const [iAmTyping, setIAmTyping] = useState(false);
     const [fileMenuAnchor, setFileMenuAnchor] = useState(null);
-
+    
+    const bottomRef = useRef(null);
+    const typingTimeout = useRef(null);
+    const chatListRef = useRef(null);
+    const inputRef = useRef(null);
+    
     const socket = useSocket();
     const dispatch = useDispatch();
 
+    const oldestMessageTimestamp = [];
+
     const chatDetails = useGetChatDetailsQuery({ chatId, skip: !chatId });
     const members = chatDetails?.data?.chat?.members;
-    const { data, isLoading } = useGetMessagesQuery({ chatId, page });
+
+    const { data, isLoading } = useGetMessagesQuery({ chatId, page, oldestMessageTimestamp });
     const { data: chatMemberDetails } = useGetOtherChatMemberQuery({ chatId });
+
+    if (data?.messages?.length > 0) {
+        oldestMessageTimestamp.push(data.messages[data?.messages.length - 1].createdAt);
+        console.log(oldestMessageTimestamp);
+    }
 
     const { theme } = useSelector(store => store.chat);
 
@@ -66,8 +73,9 @@ const Chat = ({ chatId, user, chats=[], handleDeleteChat }) => {
 
     useEffect(() => {
         if(data) {
+            console.log(data?.messages);
             setTotalPages(data?.totalPages);
-            setMessages(data ? [...data.messages, ...messages] : [...messages]);
+            setMessages(data?.messages ? [...data.messages, ...messages] : []);
         }
     }, [data]);
 
@@ -122,13 +130,18 @@ const Chat = ({ chatId, user, chats=[], handleDeleteChat }) => {
         if(!message.trim()) return;
 
         socket.emit(NEW_MESSAGE, { chatId, members, message });
+
+        bottomRef.current.scrollIntoView({ behaviour: 'smooth' });
         setMessage('');
         inputRef.current.focus();
     }
 
     const newMessagesListener = useCallback((data) => {
         if(data.chatId !== chatId) return;
+        
+        setNewMessagesCount(prev => prev+1);
         setMessages((prev) => [...prev, data?.message])
+        bottomRef.current.scrollIntoView({ behaviour: 'smooth' });
     }, [chatId]);
 
     const startTypingListener = useCallback((data) => {
