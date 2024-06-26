@@ -34,7 +34,7 @@ const DeleteChatMenu = ({ dispatch, deleteMenuAnchor }) => {
 
     useEffect(() => {
         if(deleteChatData || leaveGroupData) 
-            navigate('/');
+            navigate('/Chat-app-MERN');
     }, [deleteChatData, leaveGroupData]);
     
   return (

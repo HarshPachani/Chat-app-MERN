@@ -30,7 +30,7 @@ const MenuAnchor = ({ isOpen, setIsOpen, dispatch, menuAnchor, openProfile }) =>
         onClose={handleClose}
         anchorEl={menuAnchor.current}
         anchorOrigin={{
-            vertical: 'right',
+            vertical: 'center',
             horizontal: 'right',
         }}
         transformOrigin={{
