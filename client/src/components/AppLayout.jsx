@@ -70,7 +70,7 @@ const appLayout = () => (WrappedComponent) => {
 
         const refetchListener = useCallback((data) => {
             refetch();
-            navigate('/');
+            navigate('/Chat-app-MERN');
         }, [refetch, navigate]);
         
         const eventHandlers = {

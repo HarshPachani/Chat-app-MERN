@@ -33,7 +33,7 @@ const App = () => {
   }, [dispatch]);
 
   return loader ? (<LayoutLoader />) : (
-    <Router basename='/Chat-app-MERN'>
+    <Router>
       <Suspense fallback={<LayoutLoader />}>
         <Routes>
           <Route
@@ -43,15 +43,15 @@ const App = () => {
               </SocketProvider>
             }
           >
-            <Route path='/' element={<Home />} />
-            <Route path='/chat/:id' element={<Chat />} />
-            <Route path='/groups' element={<Group />} />
+            <Route path='/Chat-app-MERN/' element={<Home />} />
+            <Route path='/Chat-app-MERN/chat/:id' element={<Chat />} />
+            <Route path='/Chat-app-MERN/groups' element={<Group />} />
           </Route>
 
           <Route
-            path="/login"
+            path="/Chat-app-MERN/login"
             element={
-              <ProtectRoute user={!user} redirect="/">
+              <ProtectRoute user={!user} redirect="/Chat-app-MERN">
                 <Login />
               </ProtectRoute>
             }
