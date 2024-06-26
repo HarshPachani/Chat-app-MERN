@@ -10,7 +10,7 @@ const Home = () => {
   return (
     <Box height='100%' bgcolor={gray} sx={{
       display: { sm: 'flex', xs: 'none' },
-      width: '90%',
+      width: '70%',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',

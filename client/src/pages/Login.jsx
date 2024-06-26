@@ -22,13 +22,13 @@ const Login = () => {
   const [name, setName] = useState('');
   const [bio, setBio] = useState('');
   const [username, setUsername] = useState('Guest');
-  const [password, setPassword] = useState('GuestPass');
+  const [password, setPassword] = useState('123456');
 
   const avatar = useFileHandler("single", 2);
 
   const handleLogin = async (e) => {
-    setIsLoading(true);
     e.preventDefault();
+    setIsLoading(true);
 
     const toastId = toast.loading('Logging In...');
     

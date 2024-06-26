@@ -23,7 +23,7 @@ const ChatItem = ({
           padding: '0',
           borderRadius: '10px 10px 10px 0px'
       }}
-      to={`/chat/${_id}`}
+      to={`/Chat-app-MERN/chat/${_id}`}
     >
         <div
           style={{
