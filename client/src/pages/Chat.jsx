@@ -27,6 +27,7 @@ const Chat = ({ chatId, user, handleDeleteChat }) => {
     const [userTyping, setUserTyping] = useState('');
     const [iAmTyping, setIAmTyping] = useState(false);
     const [fileMenuAnchor, setFileMenuAnchor] = useState(null);
+    const [fetchTrigger, setFetchTrigger] = useState(true);
     
     const bottomRef = useRef(null);
     const typingTimeout = useRef(null);
@@ -36,24 +37,17 @@ const Chat = ({ chatId, user, handleDeleteChat }) => {
     const socket = useSocket();
     const dispatch = useDispatch();
 
-    const oldestMessageTimestamp = [];
-
     const chatDetails = useGetChatDetailsQuery({ chatId, skip: !chatId });
     const members = chatDetails?.data?.chat?.members;
-
-    const { data, isLoading } = useGetMessagesQuery({ chatId, page, oldestMessageTimestamp });
+    
+    const { data, isLoading } = useGetMessagesQuery({ chatId, page, totalMessages: messages?.length  }, { skip: !fetchTrigger });
     const { data: chatMemberDetails } = useGetOtherChatMemberQuery({ chatId });
-
-    if (data?.messages?.length > 0) {
-        oldestMessageTimestamp.push(data.messages[data?.messages.length - 1].createdAt);
-        console.log(oldestMessageTimestamp);
-    }
 
     const { theme } = useSelector(store => store.chat);
 
     const errors = [
         { isError: chatDetails.isError, error: chatDetails.error },
-      ];
+    ];
     
     useEffect(() => {
         socket.emit(CHAT_JOINED, { userId: user?._id, members })
@@ -64,6 +58,7 @@ const Chat = ({ chatId, user, handleDeleteChat }) => {
             setMessage('');
             setPage(1);
             setTotalPages(0);
+            setFetchTrigger(true);
         }
     }, [chatId]);
 
@@ -73,9 +68,9 @@ const Chat = ({ chatId, user, handleDeleteChat }) => {
 
     useEffect(() => {
         if(data) {
-            console.log(data?.messages);
             setTotalPages(data?.totalPages);
             setMessages(data?.messages ? [...data.messages, ...messages] : []);
+            setFetchTrigger(false);
         }
     }, [data]);
 
@@ -87,6 +82,9 @@ const Chat = ({ chatId, user, handleDeleteChat }) => {
                     return;
                 }
                 setPage(prev => prev + 1);
+                if (!fetchTrigger) {
+                    setFetchTrigger(true); // Trigger API call
+                }
             }
         };
 
@@ -96,7 +94,7 @@ const Chat = ({ chatId, user, handleDeleteChat }) => {
         return () => {
             chatListElement.removeEventListener('scroll', handleScroll);
         };
-    }, [totalPages, page]);
+    }, [totalPages, page, fetchTrigger]);
 
 
     const handleMessageChange = (e) => {

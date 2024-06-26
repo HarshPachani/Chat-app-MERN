@@ -26,12 +26,14 @@ const api = createApi({
         providedTags: ['Chat'], //For not caching for this API.
     }),
     getMessages: builder.query({
-        query: ({ chatId, page=1, oldestMessageTimestamp }) => ({
-            url: `chat/message/${chatId}?page=${page}&oldestMessageTimestamp=${oldestMessageTimestamp}`,
+      query: ({ chatId, page=1, totalMessages }) => {
+          return ({
+            url: `chat/message/${chatId}?page=${page}&totalMessages=${totalMessages}`,
             credentials: "include",
-          }),
-          keepUnusedDataFor: 0,
+          })
         },
+        keepUnusedDataFor: 0,
+      }
     ),  
     searchUser: builder.query({
       query: (name) => ({
