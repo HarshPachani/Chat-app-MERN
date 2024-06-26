@@ -255,13 +255,10 @@ const leaveGroup = TryCatch(async(req, res, next) => {
 })
 
 const getMessages = TryCatch(async(req, res, next) => {
-    console.log("Recalling");
     const { id: chatId } = req.params;
-    const { page = 1, oldestMessageTimestamp } = req.query;
+    const { page = 1, totalMessages=0 } = req.query;
     const limit = 10;
-    const skip = (page - 1) * limit;
-
-    console.log(oldestMessageTimestamp.toString());
+    const skip = parseInt(totalMessages);
 
     const chat = await Chat.findById(chatId);
 
@@ -271,9 +268,6 @@ const getMessages = TryCatch(async(req, res, next) => {
         return next(new ErrorHandler('You are not allowed to access this chat'), 403);
 
     let query = { chat: chatId };
-    if (oldestMessageTimestamp?.length > 0) {
-        query.createdAt = { $lt: new Date(oldestMessageTimestamp[0]) };
-    }
     
     const [messages, totalMessagesCount] = await Promise.all([
         Message.find(query)

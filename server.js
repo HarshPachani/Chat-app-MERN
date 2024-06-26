@@ -59,7 +59,6 @@ io.on('connection', (socket) => {
     const user = socket.user;
     userSocketIDs.set(user._id.toString(), socket.id);
     onlineUsers.add(user._id.toString());
-    console.log('Sockets...', userSocketIDs);
 
     socket.on(NEW_MESSAGE, async({ chatId, members, message }) => {
         const messageForRealTime = {
@@ -130,7 +129,6 @@ io.on('connection', (socket) => {
         userSocketIDs.delete(user._id.toString());
         onlineUsers.delete(user._id.toString());
         socket.broadcast.emit(ONLINE_USERS, Array.from(onlineUsers));
-        console.log('Sockets...(Disconnect)', userSocketIDs);
     });
 });
 
