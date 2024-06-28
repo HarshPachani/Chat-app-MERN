@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/Chat-app-MERN/static/css/main.3f078b86.css",
-    "main.js": "/Chat-app-MERN/static/js/main.c0850983.js",
+    "main.js": "/Chat-app-MERN/static/js/main.393a3aa3.js",
     "static/js/264.b3d4bda7.chunk.js": "/Chat-app-MERN/static/js/264.b3d4bda7.chunk.js",
-    "static/js/49.21f7bb15.chunk.js": "/Chat-app-MERN/static/js/49.21f7bb15.chunk.js",
-    "static/js/283.11e1149b.chunk.js": "/Chat-app-MERN/static/js/283.11e1149b.chunk.js",
-    "static/js/770.4ce15c56.chunk.js": "/Chat-app-MERN/static/js/770.4ce15c56.chunk.js",
+    "static/js/49.dd9d4606.chunk.js": "/Chat-app-MERN/static/js/49.dd9d4606.chunk.js",
+    "static/js/283.6d7e8c90.chunk.js": "/Chat-app-MERN/static/js/283.6d7e8c90.chunk.js",
+    "static/js/770.31f17256.chunk.js": "/Chat-app-MERN/static/js/770.31f17256.chunk.js",
     "static/js/453.258b012d.chunk.js": "/Chat-app-MERN/static/js/453.258b012d.chunk.js",
     "static/js/981.d1799cc0.chunk.js": "/Chat-app-MERN/static/js/981.d1799cc0.chunk.js",
     "static/js/621.de07cafe.chunk.js": "/Chat-app-MERN/static/js/621.de07cafe.chunk.js",
     "static/js/307.d48da5a7.chunk.js": "/Chat-app-MERN/static/js/307.d48da5a7.chunk.js",
-    "static/js/615.e15010d2.chunk.js": "/Chat-app-MERN/static/js/615.e15010d2.chunk.js",
+    "static/js/615.f6ce749a.chunk.js": "/Chat-app-MERN/static/js/615.f6ce749a.chunk.js",
     "static/js/861.7db7f69f.chunk.js": "/Chat-app-MERN/static/js/861.7db7f69f.chunk.js",
     "static/js/481.4310b570.chunk.js": "/Chat-app-MERN/static/js/481.4310b570.chunk.js",
     "static/js/122.41288d70.chunk.js": "/Chat-app-MERN/static/js/122.41288d70.chunk.js",
@@ -21,19 +21,19 @@
     "static/js/219.6e0bb9cc.chunk.js": "/Chat-app-MERN/static/js/219.6e0bb9cc.chunk.js",
     "static/js/400.33d4f226.chunk.js": "/Chat-app-MERN/static/js/400.33d4f226.chunk.js",
     "static/js/785.f1ee3ca0.chunk.js": "/Chat-app-MERN/static/js/785.f1ee3ca0.chunk.js",
-    "static/js/390.46ea814b.chunk.js": "/Chat-app-MERN/static/js/390.46ea814b.chunk.js",
+    "static/js/390.dd5fb629.chunk.js": "/Chat-app-MERN/static/js/390.dd5fb629.chunk.js",
     "index.html": "/Chat-app-MERN/index.html",
     "main.3f078b86.css.map": "/Chat-app-MERN/static/css/main.3f078b86.css.map",
-    "main.c0850983.js.map": "/Chat-app-MERN/static/js/main.c0850983.js.map",
+    "main.393a3aa3.js.map": "/Chat-app-MERN/static/js/main.393a3aa3.js.map",
     "264.b3d4bda7.chunk.js.map": "/Chat-app-MERN/static/js/264.b3d4bda7.chunk.js.map",
-    "49.21f7bb15.chunk.js.map": "/Chat-app-MERN/static/js/49.21f7bb15.chunk.js.map",
-    "283.11e1149b.chunk.js.map": "/Chat-app-MERN/static/js/283.11e1149b.chunk.js.map",
-    "770.4ce15c56.chunk.js.map": "/Chat-app-MERN/static/js/770.4ce15c56.chunk.js.map",
+    "49.dd9d4606.chunk.js.map": "/Chat-app-MERN/static/js/49.dd9d4606.chunk.js.map",
+    "283.6d7e8c90.chunk.js.map": "/Chat-app-MERN/static/js/283.6d7e8c90.chunk.js.map",
+    "770.31f17256.chunk.js.map": "/Chat-app-MERN/static/js/770.31f17256.chunk.js.map",
     "453.258b012d.chunk.js.map": "/Chat-app-MERN/static/js/453.258b012d.chunk.js.map",
     "981.d1799cc0.chunk.js.map": "/Chat-app-MERN/static/js/981.d1799cc0.chunk.js.map",
     "621.de07cafe.chunk.js.map": "/Chat-app-MERN/static/js/621.de07cafe.chunk.js.map",
     "307.d48da5a7.chunk.js.map": "/Chat-app-MERN/static/js/307.d48da5a7.chunk.js.map",
-    "615.e15010d2.chunk.js.map": "/Chat-app-MERN/static/js/615.e15010d2.chunk.js.map",
+    "615.f6ce749a.chunk.js.map": "/Chat-app-MERN/static/js/615.f6ce749a.chunk.js.map",
     "861.7db7f69f.chunk.js.map": "/Chat-app-MERN/static/js/861.7db7f69f.chunk.js.map",
     "481.4310b570.chunk.js.map": "/Chat-app-MERN/static/js/481.4310b570.chunk.js.map",
     "122.41288d70.chunk.js.map": "/Chat-app-MERN/static/js/122.41288d70.chunk.js.map",
@@ -44,10 +44,10 @@
     "219.6e0bb9cc.chunk.js.map": "/Chat-app-MERN/static/js/219.6e0bb9cc.chunk.js.map",
     "400.33d4f226.chunk.js.map": "/Chat-app-MERN/static/js/400.33d4f226.chunk.js.map",
     "785.f1ee3ca0.chunk.js.map": "/Chat-app-MERN/static/js/785.f1ee3ca0.chunk.js.map",
-    "390.46ea814b.chunk.js.map": "/Chat-app-MERN/static/js/390.46ea814b.chunk.js.map"
+    "390.dd5fb629.chunk.js.map": "/Chat-app-MERN/static/js/390.dd5fb629.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.3f078b86.css",
-    "static/js/main.c0850983.js"
+    "static/js/main.393a3aa3.js"
   ]
 }
