@@ -1,23 +1,13 @@
 {
   "version": 2,
   "builds": [
-    {
-      "src": "server.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "!client/**",
-      "use": "@now/static"
-    }
+    { "src": "server.js", "use": "@vercel/node" }
   ],
   "routes": [
-    { "src": "/(.*)", "dest": "server.js" }
+    { "src": "/api/(.*)", "dest": "server.js" },
+    { "src": "/(.*)", "dest": "client/$1" }
   ],
-  "build": {
-    "env": {
-      "NODE_ENV": "production"
-    },
-    "installCommand": "npm install",
-    "buildCommand": "npm run build"
+  "env": {
+    "NODE_ENV": "production"
   }
 }
