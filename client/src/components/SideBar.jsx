@@ -36,10 +36,10 @@ const SideBar = ({ chatId }) => {
   const { notificationCount, theme, newMessagesCount } = useSelector((store) => store.chat);
   
   const navigateToGroup = () => {
-    navigate('/Chat-app-MERN/groups')
+    navigate('/groups')
   }
   const navigateToChat = () => {
-    navigate('/Chat-app-MERN')
+    navigate('/')
   }
 
   const openSearchDialog = () => dispatch(setIsSearch(true));
@@ -106,7 +106,7 @@ const SideBar = ({ chatId }) => {
               title="Chats"
               icon={<ChatIcon />}
               onClick={navigateToChat}
-              color={(location.pathname.includes('/chat') || location.pathname === '/Chat-app-MERN') && (!isSearch && !isNotification && !isNewGroup && !isProfile) ? theme : 'inherit'}
+              color={(location.pathname.includes('/chat') || location.pathname === '/') && (!isSearch && !isNotification && !isNewGroup && !isProfile) ? theme : 'inherit'}
               value={newMessagesCount}
               name={'Chats'}
               sx={{flexShrink: 0, marginRight: '2px'}}

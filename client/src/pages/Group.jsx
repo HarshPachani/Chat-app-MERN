@@ -103,7 +103,7 @@ const Group = ({ myGroups }) => {
   }, [chatId]);
   
   const navigateBack = () => {
-    navigate("/Chat-app-MERN/groups");
+    navigate("/groups");
   };
 
   const openConfirmDeleteHandler = () => {
@@ -116,7 +116,7 @@ const Group = ({ myGroups }) => {
 
   const deleteGroupHandler = () => {
     deleteGroup('Deleting Group...', chatId);
-    navigate('/Chat-app-MERN/groups');
+    navigate('/groups');
     setConfirmDeleteDialog(false);
   }
 

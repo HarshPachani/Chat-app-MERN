@@ -1,7 +1,7 @@
 import React from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
 
-const ProtectRoute = ({ children, user, redirect='/Chat-app-MERN/login' }) => {
+const ProtectRoute = ({ children, user, redirect='/login' }) => {
   if(!user) {
     return <Navigate to={redirect} />
   }

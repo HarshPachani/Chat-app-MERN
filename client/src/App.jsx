@@ -43,15 +43,15 @@ const App = () => {
               </SocketProvider>
             }
           >
-            <Route path='/Chat-app-MERN/' element={<Home />} />
-            <Route path='/Chat-app-MERN/chat/:id' element={<Chat />} />
-            <Route path='/Chat-app-MERN/groups' element={<Group />} />
+            <Route path='/' element={<Home />} />
+            <Route path='/chat/:id' element={<Chat />} />
+            <Route path='/groups' element={<Group />} />
           </Route>
 
           <Route
-            path="/Chat-app-MERN/login"
+            path="/login"
             element={
-              <ProtectRoute user={!user} redirect="/Chat-app-MERN">
+              <ProtectRoute user={!user} redirect="/">
                 <Login />
               </ProtectRoute>
             }

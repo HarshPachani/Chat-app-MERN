@@ -38,7 +38,7 @@ const ChatHeader = ({ socket, chatMemberDetails, handleDeleteChat }) => {
     useSocketEvents(socket, eventHandlers);
 
 
-    const navigateBack = () => navigate('/Chat-app-MERN')
+    const navigateBack = () => navigate('/')
 
   return (
     <Box
