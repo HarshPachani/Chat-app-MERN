@@ -155,7 +155,7 @@ const ChatList = ({
                 }
             </Box>
             <InputBox 
-                placeholder="Search Friends..."
+                placeholder={`Search ${optionType==='all' ? 'Friends' : optionType}...`}
                 value={search}
                 onChange={handleSearchChange}
             />
