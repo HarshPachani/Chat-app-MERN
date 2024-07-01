@@ -33,6 +33,7 @@ const Chat = ({ chatId, user, handleDeleteChat }) => {
     const typingTimeout = useRef(null);
     const chatListRef = useRef(null);
     const inputRef = useRef(null);
+    const firstMessageRef = useRef(null);
     
     const socket = useSocket();
     const dispatch = useDispatch();
@@ -67,11 +68,27 @@ const Chat = ({ chatId, user, handleDeleteChat }) => {
     }, [messages]);
 
     useEffect(() => {
+        let timeoutId;
         if(data) {
+            if(chatListRef.current.firstChild) {
+                firstMessageRef.current = chatListRef.current.firstChild;
+            } 
             setTotalPages(data?.totalPages);
-            setMessages(data?.messages ? [...data.messages, ...messages] : []);
+            setMessages(prevMessages => [...data.messages, ...prevMessages]);
             setFetchTrigger(false);
+
+            timeoutId = setTimeout(() => {
+                if (firstMessageRef.current) {
+                    firstMessageRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                }
+            }, 0);
         }
+        
+        return () => {
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+            }
+        };
     }, [data]);
 
     useEffect(() => {
@@ -190,7 +207,6 @@ const Chat = ({ chatId, user, handleDeleteChat }) => {
 
     useSocketEvents(socket, eventHandlers);
     useErrors(errors);
-    const chatMember = [];
   return (
     <Box
         sx={{
@@ -228,8 +244,13 @@ const Chat = ({ chatId, user, handleDeleteChat }) => {
                 </Box>
                 :
                 <>
-                    {messages?.map((i) => (
-                    <MessageComponent key={i._id} message={i} user={user} groupChat={chatMemberDetails?.isGroupChat} />
+                    {messages?.map((i, index) => (
+                        <MessageComponent 
+                            key={i._id} 
+                            message={i} 
+                            user={user} 
+                            groupChat={chatMemberDetails?.isGroupChat}
+                        />
                     ))}
 
                     {userTyping && !chatMemberDetails?.isGroupChat && <TypingLoader />}
